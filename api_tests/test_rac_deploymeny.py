@@ -54,7 +54,7 @@ class TestRacDeployment(BaseTest):
 
     Once the cluster installed we will have 3 masters inside the hypervisor.
     We will allow to run python oc commands from the hypervisor and ssh to ocpv vms
-    
+
 
     """
 
