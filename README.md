@@ -8,11 +8,17 @@ Test run on baremetal node , create a cluster on libvirt with virtual machines
 Install cluster with assisted-test-infra framework(upstream) , enabled needed operators
 
 Runing test:
+
 git config --global http.sslVerify false
+
 cd /home/benny/
+
 git clone https://github.com/openshift/assisted-test-infra
+
 git clone https://github.com/bkopilov/rac-test-infra.git
+
 cd assisted-test-infra
+
 make image_build 
 
 export OPENSHIFT_VERSION="4.18"
@@ -40,6 +46,7 @@ export OFFLINE_TOKEN=
 export PULL_SECRET=
 
 Run test:
+
 make test 
 
 
