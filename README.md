@@ -33,7 +33,8 @@ export TEST_TEARDOWN="false"
 
 export SSH_PUB_KEY="$(cat /root/.ssh/id_rsa.pub)"
 
-# token and pull secrect from https://console.redhat.com/openshift/downloads
+token and pull secrect from https://console.redhat.com/openshift/downloads
+
 export OFFLINE_TOKEN=
 
 export PULL_SECRET=
