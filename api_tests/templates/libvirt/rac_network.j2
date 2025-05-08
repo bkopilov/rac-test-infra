@@ -1,0 +1,35 @@
+<network>
+  <name>{{network_name}}</name>
+  <forward mode="nat">
+	<nat>
+  	<port start="1024" end="65535"/>
+	</nat>
+  </forward>
+  <bridge name="{{bridge_name}}" stp="on" delay="0"/>
+  <mac address="{{bridge_mac}}"/>
+  <domain name="{{domain_name}}" localOnly="yes"/>
+  <dns enable="yes">
+	<host ip="{{vip1_ipv4}}">
+  	<hostname>{{vip1_host}}</hostname>
+	</host>
+	<host ip="{{vip2_ipv4}}">
+  	<hostname>{{vip2_host}}</hostname>
+	</host>
+	<host ip="{{scan1_ipv4}}">
+  	<hostname>{{scan_host}}</hostname>
+	</host>
+	<host ip="{{scan2_ipv4}}">
+  	<hostname>{{scan_host}}</hostname>
+	</host>
+	<host ip="{{scan3_ipv4}}">
+  	<hostname>{{scan_host}}</hostname>
+	</host>
+  </dns>
+  <ip address="{{bridge_ipv4}}" netmask="{{bridge_subnet}}">
+	<dhcp>
+  	<range start="{{bridge_dhcp_start_ipv4}}" end="{{bridge_dhcp_end_ipv4}}"/>
+  	<host mac="{{rac1_mac}}" name="oralab1" ip="{{rac1_ipv4}}"/>
+  	<host mac="{{rac2_mac}}" name="oralab2" ip="{{rac2_ipv4}}"/>
+	</dhcp>
+  </ip>
+</network>
