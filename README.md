@@ -49,4 +49,17 @@ Run test:
 
 make test 
 
+In order to access to the clusters console from laptop need to :
+
+Update /etc/hosts to the hypervisor
+Example:
+10.9.76.8 	api.test-infra-cluster-97a2d146.redhat.com
+
+10.9.76.8	oauth-openshift.apps.test-infra-cluster-97a2d146.redhat.com
+
+10.9.76.8	console-openshift-console.apps.test-infra-cluster-97a2d146.redhat.com
+
+From the Hypervisor need to add nat redirect to the API address on 443:
+
+sudo iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 192.168.127.10:443
 
