@@ -1,7 +1,8 @@
 import logging
 from tests.base_test import BaseTest
-from api_tests.common.libivrt_network import RacNetworkBuilder, generate_xml_network, RacNetwork
-from api_tests.common.libivrt_network import RacInterfaceBuilder, RacNetworkDirector, RacInterface
+from api_tests.common.libivrt_network import RacNetworkBuilder, RacNetwork
+from api_tests.common.builder_template import generate_builder, TemplateDirector
+from api_tests.common.libivrt_network import RacInterfaceBuilder, RacInterface
 from netaddr import IPNetwork
 
 import copy
@@ -80,8 +81,7 @@ class TestRacDeployment(BaseTest):
         rac_net = IPNetwork("192.168.120.0").ip  # same for all dns server - rac scan and vip
         jump_network = 256
         for net_name in self.RAC_NETWORKS:
-            rac_network = RacNetwork()
-            rac_builder = RacNetworkBuilder(rac_network)
+            rac_builder = RacNetworkBuilder(RacNetwork())
             rac_builder.build_bridge_network(bridge_name=net_name, bridge_mac=self.generate_mac(),
                                              domain_name="oracle-rac.openinfra.lab", bridge_ipv4=str(ipv4_net + 1),
                                              bridge_ipv4_subnet="24")
@@ -103,9 +103,9 @@ class TestRacDeployment(BaseTest):
                                        rac2_mac=rac2_mac, rac2_hostname="oralab2", rac2_ipv4=str(ipv4_net + 102))
 
             self.RAC_MACS[net_name] = [rac1_mac, rac2_mac]
-            director = RacNetworkDirector(network_builder=rac_builder)
+            director = TemplateDirector(template_builder=rac_builder)
             params = director.j2_params()
-            output = generate_xml_network("rac_network.j2", **params)
+            output = generate_builder("rac_network.j2", package_path="templates/libvirt",  **params)
             net = cluster.nodes.controller.libvirt_connection.networkDefineXML(output)
             rac_networks.append(net)
             net.setAutostart(1)
@@ -114,11 +114,12 @@ class TestRacDeployment(BaseTest):
             ipv4_net += jump_network
 
         yield cluster
-        # cleanup phase , remove additional network created when not attached.
-        for net in rac_networks:
+        # Cleanup phase , remove additional network created when not attached.
+        for clean_network in rac_networks:
             try:
-                net.destroy()
-                net.undefine()
+                logger.info(f"Cleaning up networks {str(clean_network)}")
+                clean_network.destroy()
+                clean_network.undefine()
             except Exception as e:
                 logger.error(e)
 
@@ -136,9 +137,9 @@ class TestRacDeployment(BaseTest):
                 rac_interface = RacInterface()
                 rac_builder = RacInterfaceBuilder(rac_interface)
                 rac_builder.attach_interface(mac_address=self.generate_mac(), network_name=net_name)
-                director = RacNetworkDirector(network_builder=rac_builder)
+                director = TemplateDirector(template_builder=rac_builder)
                 params = director.j2_params()
-                output = generate_xml_network("rac_interface.j2", **params)
+                output = generate_builder("rac_interface.j2", package_path="templates/libvirt", **params)
                 node_obj.attachDeviceFlags(output, attach_flags)
 
     @pytest.mark.rac

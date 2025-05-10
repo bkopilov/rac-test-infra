@@ -1,10 +1,11 @@
-from jinja2 import Environment, PackageLoader
 import logging
-
+from .builder_template import TemplateBuilder
 logger = logging.getLogger(__name__)
 
 
 class RacNetwork:
+    """RacNetwork is the product for template builder"""
+
     def __init__(self):
         self.bridge_name = None
         self.network_name = None
@@ -31,26 +32,22 @@ class RacNetwork:
 
 
 class RacInterface:
+    """RacInterface is the product for template builder"""
+
     def __init__(self):
         self.mac_address = None
         self.network_name = None
 
 
-class NetworkBuilder:
-    def __init__(self, network_template=None):
-        self.network_template = network_template
-
-    def get_params(self):
-        return self.network_template.__dict__
-
-
-class RacInterfaceBuilder(NetworkBuilder):
+class RacInterfaceBuilder(TemplateBuilder):
+    """Update RacInterface product params"""
     def attach_interface(self, mac_address, network_name):
         self.network_template.mac_address = mac_address
         self.network_template.network_name = network_name
 
 
-class RacNetworkBuilder(NetworkBuilder):
+class RacNetworkBuilder(TemplateBuilder):
+    """Update RacNetwork product params"""
 
     def build_bridge_network(self, bridge_name, bridge_mac, domain_name, bridge_ipv4, bridge_ipv4_subnet):
         self.network_template.network_name = bridge_name
@@ -82,19 +79,3 @@ class RacNetworkBuilder(NetworkBuilder):
         self.network_template.rac2_mac = rac2_mac
         self.network_template.rac2_hostname = rac2_hostname
         self.network_template.rac2_ipv4 = rac2_ipv4
-
-
-class RacNetworkDirector:
-    def __init__(self, network_builder):
-        self.network_builder = network_builder
-
-    def j2_params(self):
-        return self.network_builder.get_params()
-
-
-def generate_xml_network(template_name, **kwargs):
-    env = Environment(loader=PackageLoader("api_tests", package_path="templates/libvirt"))
-    template = env.get_template(template_name)
-    network_xml = template.render(**kwargs)
-    logger.debug(f"Creating the '{network_xml}'")
-    return network_xml
