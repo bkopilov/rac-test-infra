@@ -41,5 +41,7 @@ Example:
 10.9.76.8	console-openshift-console.apps.test-infra-cluster-97a2d146.redhat.com
 
 From the Hypervisor need to add nat redirect to the API address on 443:
+Adding source of laptop will prevent issue with access to port 443 for other services
+
 sudo iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 192.168.127.10:443
 ```

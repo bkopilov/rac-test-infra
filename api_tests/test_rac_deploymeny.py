@@ -1,8 +1,12 @@
 import logging
 from tests.base_test import BaseTest
+
 from api_tests.common.libivrt_network import RacNetworkBuilder, RacNetwork
+from api_tests.common.ocp_network import NodeNetworkConfigurationPolicy, NetworkAttachmentDefinition
+from api_tests.common.ocp_network import NetworkAttachmentDefinitionBuilder, NodeNetworkConfigurationPolicyBuilder
 from api_tests.common.builder_template import generate_builder, TemplateDirector
 from api_tests.common.libivrt_network import RacInterfaceBuilder, RacInterface
+from api_tests.common.commands.oc_commands import oc_select, oc_create, oc_node_interfaces_ip
 from netaddr import IPNetwork
 
 import copy
@@ -17,6 +21,10 @@ RAM_MEMORY_GIB = 1024 * 60
 DISK_COUNT = 2
 VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'self-node-remediation', 'lso', 'nmstate', 'kube-descheduler',
                          'node-healthcheck', 'fence-agents-remediation', 'node-maintenance']
+
+
+def generate_mac():
+    return "fe:54:00:" + ":".join([('0'+hex(random.randint(0, 100))[2:])[-2:].upper() for _ in range(3)])
 
 
 class TestRacDeployment(BaseTest):
@@ -35,7 +43,7 @@ class TestRacDeployment(BaseTest):
 
     The test will run on hypervisor runnning libvirt
     ---------------------Hypervisor --------------------
-    |             open-shfit cluster
+    |             open-shift cluster
           Master0        Master1          Master2
     |        |             | vth               |
     |      ----------- br-ex bridge ----------
@@ -58,9 +66,10 @@ class TestRacDeployment(BaseTest):
 
 
     """
-
-    RAC_MACS = {}
-    RAC_NETWORKS = ["rac1", "rac2", "rac3"]
+    # Creating two VM's each one will have the reserved mac for "permanent" address for each interface
+    RAC_NETWORKS = [{"name": "rac1", "cidr": IPNetwork("192.168.120.0/24"), "macs": [generate_mac(), generate_mac()]},
+                    {"name": "rac2", "cidr": IPNetwork("192.168.121.0/24"), "macs": [generate_mac(), generate_mac()]},
+                    {"name": "rac3", "cidr": IPNetwork("192.168.122.0/24"), "macs": [generate_mac(), generate_mac()]}]
 
     @staticmethod
     def _set_bundle_operators(cluster, *operators):
@@ -70,39 +79,35 @@ class TestRacDeployment(BaseTest):
         for operator in set(operators_list):
             cluster.set_olm_operator(operator)
 
-    @staticmethod
-    def generate_mac():
-        return "fe:54:00:" + ":".join([('0'+hex(random.randint(0, 100))[2:])[-2:].upper() for _ in range(3)])
-
     @pytest.fixture
-    def clusters_network(self, cluster):
+    def cluster_networks(self, cluster):
         rac_networks = []  # used for cleanup
-        ipv4_net = IPNetwork("192.168.120.0").ip
-        rac_net = IPNetwork("192.168.120.0").ip  # same for all dns server - rac scan and vip
-        jump_network = 256
-        for net_name in self.RAC_NETWORKS:
+        rac_net = copy.deepcopy(self.RAC_NETWORKS[0]['cidr'])  # same for all dns server - rac scan and vip
+        for network in self.RAC_NETWORKS:
             rac_builder = RacNetworkBuilder(RacNetwork())
-            rac_builder.build_bridge_network(bridge_name=net_name, bridge_mac=self.generate_mac(),
-                                             domain_name="oracle-rac.openinfra.lab", bridge_ipv4=str(ipv4_net + 1),
+            rac_builder.build_bridge_network(bridge_name=network['name'], bridge_mac=generate_mac(),
+                                             domain_name="oracle-rac.openinfra.lab",
+                                             bridge_ipv4=str(network['cidr'].ip + 1),
                                              bridge_ipv4_subnet="24")
 
-            rac_builder.build_rac_vip_network(vip1_ipv4=str(rac_net + 201),
+            rac_builder.build_rac_vip_network(vip1_ipv4=str(rac_net.ip + 201),
                                               vip1_host="oralab1-vip.oracle-rac.openinfra.lab",
-                                              vip2_ipv4=str(rac_net + 202),
+                                              vip2_ipv4=str(rac_net.ip + 202),
                                               vip2_host="oralab2-vip.oracle-rac.openinfra.lab")
 
-            rac_builder.build_rac_scan_network(scan1_ipv4=str(rac_net + 69), scan2_ipv4=str(rac_net + 70),
-                                               scan3_ipv4=str(rac_net + 71),
+            rac_builder.build_rac_scan_network(scan1_ipv4=str(rac_net.ip + 69), scan2_ipv4=str(rac_net.ip + 70),
+                                               scan3_ipv4=str(rac_net.ip + 71),
                                                scan_host="oralab-scan.oracle-rac.openinfra.lab")
             # Need to save the MACs for later when creating interfaces on OCPv , ip allocation per MAC
-            rac1_mac = self.generate_mac()
-            rac2_mac = self.generate_mac()
-            rac_builder.build_rac_dhcp(bridge_dhcp_start_ipv4=str(ipv4_net + 2),
-                                       bridge_dhcp_end_ipv4=str(ipv4_net + 32),
-                                       rac1_mac=rac1_mac, rac1_hostname="oralab1", rac1_ipv4=str(ipv4_net + 101),
-                                       rac2_mac=rac2_mac, rac2_hostname="oralab2", rac2_ipv4=str(ipv4_net + 102))
+            rac1_mac = network['macs'][0]
+            rac2_mac = network['macs'][1]
+            rac_builder.build_rac_dhcp(bridge_dhcp_start_ipv4=str(network['cidr'].ip + 2),
+                                       bridge_dhcp_end_ipv4=str(network['cidr'].ip + 32),
+                                       rac1_mac=rac1_mac, rac1_hostname="oralab1",
+                                       rac1_ipv4=str(network['cidr'].ip + 101),
+                                       rac2_mac=rac2_mac, rac2_hostname="oralab2",
+                                       rac2_ipv4=str(network['cidr'].ip + 102))
 
-            self.RAC_MACS[net_name] = [rac1_mac, rac2_mac]
             director = TemplateDirector(template_builder=rac_builder)
             params = director.j2_params()
             output = generate_builder("rac_network.j2", package_path="templates/libvirt",  **params)
@@ -111,7 +116,6 @@ class TestRacDeployment(BaseTest):
             net.setAutostart(1)
             net.create()
             cluster.nodes.controller.rac_networks = rac_networks
-            ipv4_net += jump_network
 
         yield cluster
         # Cleanup phase , remove additional network created when not attached.
@@ -132,25 +136,17 @@ class TestRacDeployment(BaseTest):
 
         attach_flags = libvirt.VIR_DOMAIN_AFFECT_CONFIG
         for master in cluster.nodes.get_masters():
-            for net_name in self.RAC_NETWORKS:
+            for network in self.RAC_NETWORKS:
                 node_obj = cluster.nodes.controller.libvirt_connection.lookupByName(master.name)
                 rac_interface = RacInterface()
                 rac_builder = RacInterfaceBuilder(rac_interface)
-                rac_builder.attach_interface(mac_address=self.generate_mac(), network_name=net_name)
+                rac_builder.attach_interface(mac_address=generate_mac(), network_name=network['name'])
                 director = TemplateDirector(template_builder=rac_builder)
                 params = director.j2_params()
                 output = generate_builder("rac_interface.j2", package_path="templates/libvirt", **params)
                 node_obj.attachDeviceFlags(output, attach_flags)
 
-    @pytest.mark.rac
-    @pytest.mark.parametrize("masters_count", [3])
-    @pytest.mark.parametrize("workers_count", [0])
-    @pytest.mark.parametrize("master_vcpu", [CPU_CORES])
-    @pytest.mark.parametrize("master_memory", [RAM_MEMORY_GIB])
-    @pytest.mark.parametrize("master_disk_count", [DISK_COUNT])
-    def test_create_rac_deployment(self, clusters_network, masters_count, workers_count, master_vcpu, master_memory,
-                                   master_disk_count):
-        cluster = clusters_network
+    def _install_cluster(self, cluster):
         cluster.generate_and_download_infra_env()
         cluster.nodes.prepare_nodes()
         self._set_bundle_operators(cluster)
@@ -161,4 +157,61 @@ class TestRacDeployment(BaseTest):
         cluster.set_network_params()
         cluster.wait_for_ready_to_install()
         cluster.start_install_and_wait_for_installed()
+        # When cluster installed successfully - /tmp/kubeconfig inside the test-infra container access
+        # Update /etc/hosts file to allow access to cluster from container
+        self.update_oc_config(cluster.nodes, cluster)
+
+    def _build_ocpv_network_policy(self):
+        """Create network policy contains bridge name and mapped port to it
+        The assigned port is from the worker side and another port will be VM.
+
+        ens12(Worker) <--> |Bridge RAC1|  --- (eth0) <VM ocp>
+             |
+        | Bridge |(br-ex )
+             |
+        ens3(Hypervisor libvirt )  --> runs dhcp and dns for RAC
+             |
+           External
+        """
+
+        def get_interface_name(cidr):
+            node_interfaces = oc_node_interfaces_ip()
+            for node_interface in node_interfaces:
+                if node_interface['ipv4']:
+                    if IPNetwork(node_interface['ipv4']).cidr == cidr:
+                        return node_interface['name']
+            raise RuntimeError("Unable to find interface for cidr")
+
+        for network in self.RAC_NETWORKS:
+            interface_name = get_interface_name(network['cidr'])
+            network_policy_builder = NodeNetworkConfigurationPolicyBuilder(NodeNetworkConfigurationPolicy())
+            network_policy_builder.build_policy(bridge_name=network['name'], bridge_port=interface_name)
+            director = TemplateDirector(template_builder=network_policy_builder)
+            params = director.j2_params()
+            output = generate_builder("NodeNetworkConfigurationPolicy.j2", package_path="templates/ocp", **params)
+            oc_create(str_dict=output, namespace="default")
+
+    def _build_ocpv_network_attachment(self):
+        # Add network attachments definitions - contains the bridge name mapped to port, used by virtual machines
+        for net in self.RAC_NETWORKS:
+            network_attachment_builder = NetworkAttachmentDefinitionBuilder(NetworkAttachmentDefinition())
+            network_attachment_builder.build_policy(net['name'])
+            director = TemplateDirector(template_builder=network_attachment_builder)
+            params = director.j2_params()
+            output = generate_builder("NetworkAttachmentDefinition.j2", package_path="templates/ocp", **params)
+            oc_create(str_dict=output, namespace="default")
+
+
+
+    @pytest.mark.rac
+    @pytest.mark.parametrize("masters_count", [3])
+    @pytest.mark.parametrize("workers_count", [0])
+    @pytest.mark.parametrize("master_vcpu", [CPU_CORES])
+    @pytest.mark.parametrize("master_memory", [RAM_MEMORY_GIB])
+    @pytest.mark.parametrize("master_disk_count", [DISK_COUNT])
+    def test_create_rac_deployment(self, cluster_networks, masters_count, workers_count, master_vcpu, master_memory,
+                                   master_disk_count):
+        self._install_cluster(cluster_networks)
+        self._build_ocpv_network_policy()
+        self._build_ocpv_network_attachment()
 

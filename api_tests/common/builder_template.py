@@ -34,7 +34,7 @@ class TemplateBuilder:
     Create the director accepts builder and return formated string
 
     """
-    def __init__(self, template=None):
+    def __init__(self, template):
         self.network_template = template
 
     def get_params(self):
