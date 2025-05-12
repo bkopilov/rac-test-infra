@@ -43,5 +43,8 @@ Example:
 From the Hypervisor need to add nat redirect to the API address on 443:
 Adding source of laptop will prevent issue with access to port 443 for other services
 
-sudo iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 192.168.127.10:443
+tunnel=x.y.z.v # source
+sudo iptables -t nat -A PREROUTING -s $tunnel   -p tcp --dport 80 -j DNAT --to-destination 192.168.127.100:80
+sudo iptables -t nat -A PREROUTING  -s  $tunnel   -p tcp --dport 443 -j DNAT --to-destination 192.168.127.100:443
+
 ```
