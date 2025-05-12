@@ -35,10 +35,10 @@ class TemplateBuilder:
 
     """
     def __init__(self, template):
-        self.network_template = template
+        self.template = template
 
     def get_params(self):
-        return self.network_template.__dict__
+        return self.template.__dict__
 
 
 class TemplateDirector:

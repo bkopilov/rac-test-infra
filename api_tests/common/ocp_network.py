@@ -14,8 +14,8 @@ class NodeNetworkConfigurationPolicy:
 class NodeNetworkConfigurationPolicyBuilder(TemplateBuilder):
     """Update NodeNetworkConfigurationPolicy product params"""
     def build_policy(self, bridge_name, bridge_port):
-        self.network_template.bridge_name = bridge_name
-        self.network_template.bridge_port = bridge_port
+        self.template.bridge_name = bridge_name
+        self.template.bridge_port = bridge_port
 
 
 class NetworkAttachmentDefinition:
@@ -29,4 +29,4 @@ class NetworkAttachmentDefinitionBuilder(TemplateBuilder):
     """Update NodeNetworkConfigurationPolicy product params"""
 
     def build_policy(self, bridge_name):
-        self.network_template.bridge_name = bridge_name
+        self.template.bridge_name = bridge_name

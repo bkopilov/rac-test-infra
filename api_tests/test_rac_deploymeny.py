@@ -4,6 +4,7 @@ from tests.base_test import BaseTest
 from api_tests.common.libivrt_network import RacNetworkBuilder, RacNetwork
 from api_tests.common.ocp_network import NodeNetworkConfigurationPolicy, NetworkAttachmentDefinition
 from api_tests.common.ocp_network import NetworkAttachmentDefinitionBuilder, NodeNetworkConfigurationPolicyBuilder
+from api_tests.common.ocp_storage import PersistentVolumeClaimBuilder, PersistentVolumeClaim
 from api_tests.common.builder_template import generate_builder, TemplateDirector
 from api_tests.common.libivrt_network import RacInterfaceBuilder, RacInterface
 from api_tests.common.commands.oc_commands import oc_select, oc_create, oc_node_interfaces_ip
@@ -201,7 +202,17 @@ class TestRacDeployment(BaseTest):
             output = generate_builder("NetworkAttachmentDefinition.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
 
-
+    def build_ocpv_storage_pvc(self):
+        # RAC will run with 3 shared volumes
+        for index in range(1, 4):
+            pvc_builder = PersistentVolumeClaimBuilder(PersistentVolumeClaim())
+            pvc_builder.build_policy(pvc_name="shared-volume" + str(index), pvc_access_permissions="ReadWriteMany",
+                                     pvc_size="20Gi", pvc_storage_class="ocs-storagecluster-ceph-rbd-virtualization",
+                                     pvc_mode="Block")
+            director = TemplateDirector(template_builder=pvc_builder)
+            params = director.j2_params()
+            output = generate_builder("PersistentVolumeClaim.j2", package_path="templates/ocp", **params)
+            oc_create(str_dict=output, namespace="default")
 
     @pytest.mark.rac
     @pytest.mark.parametrize("masters_count", [3])
@@ -214,4 +225,6 @@ class TestRacDeployment(BaseTest):
         self._install_cluster(cluster_networks)
         self._build_ocpv_network_policy()
         self._build_ocpv_network_attachment()
+        self.build_ocpv_storage_pvc()
+        print("ocpv created")
 
