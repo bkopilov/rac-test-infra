@@ -186,7 +186,7 @@ class TestRacDeployment(BaseTest):
         for network in self.RAC_NETWORKS:
             interface_name = get_interface_name(network['cidr'])
             network_policy_builder = NodeNetworkConfigurationPolicyBuilder(NodeNetworkConfigurationPolicy())
-            network_policy_builder.build_policy(bridge_name=network['name'], bridge_port=interface_name)
+            network_policy_builder.build(bridge_name=network['name'], bridge_port=interface_name)
             director = TemplateDirector(template_builder=network_policy_builder)
             params = director.j2_params()
             output = generate_builder("NodeNetworkConfigurationPolicy.j2", package_path="templates/ocp", **params)
@@ -196,7 +196,7 @@ class TestRacDeployment(BaseTest):
         # Add network attachments definitions - contains the bridge name mapped to port, used by virtual machines
         for net in self.RAC_NETWORKS:
             network_attachment_builder = NetworkAttachmentDefinitionBuilder(NetworkAttachmentDefinition())
-            network_attachment_builder.build_policy(net['name'])
+            network_attachment_builder.build(net['name'])
             director = TemplateDirector(template_builder=network_attachment_builder)
             params = director.j2_params()
             output = generate_builder("NetworkAttachmentDefinition.j2", package_path="templates/ocp", **params)
@@ -206,9 +206,9 @@ class TestRacDeployment(BaseTest):
         # RAC will run with 3 shared volumes
         for index in range(1, 4):
             pvc_builder = PersistentVolumeClaimBuilder(PersistentVolumeClaim())
-            pvc_builder.build_policy(pvc_name="shared-volume" + str(index), pvc_access_permissions="ReadWriteMany",
-                                     pvc_size="20Gi", pvc_storage_class="ocs-storagecluster-ceph-rbd-virtualization",
-                                     pvc_mode="Block")
+            pvc_builder.buid(pvc_name="shared-volume" + str(index), pvc_access_permissions="ReadWriteMany",
+                             pvc_size="20Gi", pvc_storage_class="ocs-storagecluster-ceph-rbd-virtualization",
+                             pvc_mode="Block")
             director = TemplateDirector(template_builder=pvc_builder)
             params = director.j2_params()
             output = generate_builder("PersistentVolumeClaim.j2", package_path="templates/ocp", **params)

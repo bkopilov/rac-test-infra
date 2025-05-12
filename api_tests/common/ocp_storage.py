@@ -14,7 +14,7 @@ class PersistentVolumeClaim:
 
 class PersistentVolumeClaimBuilder(TemplateBuilder):
     """Update NodeNetworkConfigurationPolicy product params"""
-    def build_policy(self, pvc_name, pvc_access_permissions, pvc_size, pvc_storage_class, pvc_mode):
+    def build(self, pvc_name, pvc_access_permissions, pvc_size, pvc_storage_class, pvc_mode):
         self.template.pvc_name = pvc_name
         self.template.pvc_access_permissions = pvc_access_permissions
         self.template.pvc_size = pvc_size
