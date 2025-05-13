@@ -65,10 +65,6 @@ spec:
               name: {{volume3}}
               shareable: true
           interfaces:
-            - macAddress: '{{internal_mac}}'
-              masquerade: {}
-              model: virtio
-              name: default
             - bridge: {}
               macAddress: '{{mac_address1}}'
               model: virtio
@@ -88,8 +84,6 @@ spec:
           guest: 16Gi
         resources: {}
       networks:
-        - name: default
-          pod: {}
         - multus:
             networkName: default/{{interface_name1}}
           name: {{interface_name1}}

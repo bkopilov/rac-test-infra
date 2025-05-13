@@ -1,6 +1,5 @@
 import logging
 
-from api_tests.common.utils import generate_mac
 from .builder_template import TemplateBuilder
 logger = logging.getLogger(__name__)
 
@@ -15,7 +14,6 @@ class VirtualMachine:
         self.interface_name1 = None
         self.interface_name2 = None
         self.interface_name3 = None
-        self.internal_mac = None
         self.mac_address1 = None
         self.mac_address2 = None
         self.mac_address3 = None
@@ -38,6 +36,6 @@ class VirtualMachineBuilder(TemplateBuilder):
         self.template.mac_address1 = mac_address1
         self.template.mac_address2 = mac_address2
         self.template.mac_address3 = mac_address3
-        self.template.internal_mac = generate_mac()
+
 
 
