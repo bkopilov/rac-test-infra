@@ -199,7 +199,7 @@ class TestRacDeployment(BaseTest):
             output = generate_builder("NetworkAttachmentDefinition.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
 
-    def build_ocpv_storage_pvc(self):
+    def _build_ocpv_storage_pvc(self):
         # RAC will run with 3 shared volumes volume names shared-volume1 , shared-volume2, shared-volume3
         for index in range(1, 4):
             pvc_builder = PersistentVolumeClaimBuilder(PersistentVolumeClaim())
@@ -243,7 +243,7 @@ class TestRacDeployment(BaseTest):
         self._install_cluster(cluster_networks)
         self._build_ocpv_network_policy()
         self._build_ocpv_network_attachment()
-        self.build_ocpv_storage_pvc()
+        self._build_ocpv_storage_pvc()
         # allow ssh from running test-infra hypervisor to the RAC nodes
         run_shell_command(cmd="oc create secret generic ssh-key --from-file=ssh-privatekey=/root/.ssh/id_rsa "
                               "--from-file=ssh-publickey=/root/.ssh/id_rsa.pub")
