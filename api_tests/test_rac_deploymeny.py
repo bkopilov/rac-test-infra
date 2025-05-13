@@ -5,14 +5,15 @@ from api_tests.common.libivrt_network import RacNetworkBuilder, RacNetwork
 from api_tests.common.ocp_network import NodeNetworkConfigurationPolicy, NetworkAttachmentDefinition
 from api_tests.common.ocp_network import NetworkAttachmentDefinitionBuilder, NodeNetworkConfigurationPolicyBuilder
 from api_tests.common.ocp_storage import PersistentVolumeClaimBuilder, PersistentVolumeClaim
+from api_tests.common.ocp_virtual_machine import VirtualMachineBuilder, VirtualMachine
 from api_tests.common.builder_template import generate_builder, TemplateDirector
 from api_tests.common.libivrt_network import RacInterfaceBuilder, RacInterface
-from api_tests.common.commands.oc_commands import oc_select, oc_create, oc_node_interfaces_ip
+from api_tests.common.commands.oc_commands import oc_select, oc_create, oc_node_interfaces_ip, run_shell_command
+from api_tests.common.utils import generate_mac
 from netaddr import IPNetwork
 
 import copy
 import libvirt
-import random
 import pytest
 
 logger = logging.getLogger(__name__)
@@ -22,10 +23,6 @@ RAM_MEMORY_GIB = 1024 * 60
 DISK_COUNT = 2
 VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'self-node-remediation', 'lso', 'nmstate', 'kube-descheduler',
                          'node-healthcheck', 'fence-agents-remediation', 'node-maintenance']
-
-
-def generate_mac():
-    return "fe:54:00:" + ":".join([('0'+hex(random.randint(0, 100))[2:])[-2:].upper() for _ in range(3)])
 
 
 class TestRacDeployment(BaseTest):
@@ -203,16 +200,37 @@ class TestRacDeployment(BaseTest):
             oc_create(str_dict=output, namespace="default")
 
     def build_ocpv_storage_pvc(self):
-        # RAC will run with 3 shared volumes
+        # RAC will run with 3 shared volumes volume names shared-volume1 , shared-volume2, shared-volume3
         for index in range(1, 4):
             pvc_builder = PersistentVolumeClaimBuilder(PersistentVolumeClaim())
-            pvc_builder.buid(pvc_name="shared-volume" + str(index), pvc_access_permissions="ReadWriteMany",
-                             pvc_size="20Gi", pvc_storage_class="ocs-storagecluster-ceph-rbd-virtualization",
-                             pvc_mode="Block")
+            pvc_builder.build(pvc_name="volume" + str(index), pvc_access_permissions="ReadWriteMany",
+                              pvc_size="20Gi", pvc_storage_class="ocs-storagecluster-ceph-rbd-virtualization",
+                              pvc_mode="Block")
             director = TemplateDirector(template_builder=pvc_builder)
             params = director.j2_params()
             output = generate_builder("PersistentVolumeClaim.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
+
+    def _build_ocpv_vms(self):
+        """Create 2 VMs inside OCP with 3 nics for rac accessible from hypervisor"""
+        for index in range(2):
+            vm_builder = VirtualMachineBuilder(VirtualMachine())
+            vm_builder.build_storage(node_name="node" + str(index + 1), ssh_key_name="ssh-key",
+                                     volume1="volume" + str(1),
+                                     volume2="volume" + str(2),
+                                     volume3="volume" + str(3))
+
+            vm_builder.build_network(interface_name1=self.RAC_NETWORKS[0]['name'],
+                                     interface_name2=self.RAC_NETWORKS[1]['name'],
+                                     interface_name3=self.RAC_NETWORKS[2]['name'],
+                                     mac_address1=self.RAC_NETWORKS[0]['macs'][index],
+                                     mac_address2=self.RAC_NETWORKS[1]['macs'][index],
+                                     mac_address3=self.RAC_NETWORKS[2]['macs'][index])
+            director = TemplateDirector(template_builder=vm_builder)
+            params = director.j2_params()
+            output = generate_builder("VirtualMachine.j2", package_path="templates/ocp", **params)
+            oc_create(str_dict=output, namespace="default")
+
 
     @pytest.mark.rac
     @pytest.mark.parametrize("masters_count", [3])
@@ -226,5 +244,10 @@ class TestRacDeployment(BaseTest):
         self._build_ocpv_network_policy()
         self._build_ocpv_network_attachment()
         self.build_ocpv_storage_pvc()
-        print("ocpv created")
+        # allow ssh from running test-infra hypervisor to the RAC nodes
+        run_shell_command(cmd="oc create secret generic ssh-key --from-file=ssh-privatekey=/root/.ssh/id_rsa "
+                              "--from-file=ssh-publickey=/root/.ssh/id_rsa.pub")
+        self._build_ocpv_vms()
+        print("Nice")
+
 

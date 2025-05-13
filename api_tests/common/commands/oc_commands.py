@@ -1,5 +1,6 @@
 import logging
 import openshift_client as oc
+import subprocess
 
 logger = logging.getLogger(__name__)
 oc_client = oc
@@ -45,3 +46,13 @@ def oc_node_interfaces_ip():
             interface_dict['ipv4'] = addr
         interfaces_list.append(interface_dict)
     return interfaces_list
+
+
+def run_shell_command(cmd):
+    cmd = cmd.split()
+    logger.debug(f"oc_run_shell_command {cmd}")
+    try:
+        subprocess.run(cmd)
+    except subprocess.CalledProcessError as e:
+        logger.error(e)
+

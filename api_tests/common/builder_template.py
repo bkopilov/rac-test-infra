@@ -49,7 +49,7 @@ class TemplateDirector:
         return self.template_builder.get_params()
 
 
-def generate_builder(template_name, package_path="templates/libvirt",  **kwargs) -> str:
+def generate_builder(template_name, package_path,  **kwargs) -> str:
     env = Environment(loader=PackageLoader("api_tests", package_path=package_path))
     template = env.get_template(template_name)
     template_format = template.render(**kwargs)
