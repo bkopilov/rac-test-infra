@@ -69,6 +69,16 @@ class TestRacDeployment(BaseTest):
                     {"name": "rac2", "cidr": IPNetwork("192.168.121.0/24"), "macs": [generate_mac(), generate_mac()]},
                     {"name": "rac3", "cidr": IPNetwork("192.168.122.0/24"), "macs": [generate_mac(), generate_mac()]}]
 
+    # RAC DNS and DHCP from libvirt configuration external
+    RAC_DNS = {"vip1": {"dns": "oralab1-vip", "ip": "192.168.120.201"},
+               "vip2": {"dns": "oralab2-vip", "ip": "192.168.120.202"},
+               "scan": {"dns": "oralab-scan", "ip": ["192.168.120.69", "192.168.120.70", "192.168.120.71"]},
+               "node1": {"dns": "oralab1", "ip": "192.168.121.101"},
+               "node2": {"dns": "oralab2", "ip": "192.168.121.102"},
+               "domain": "oracle-rac.openinfra.lab"
+               }
+
+
     @staticmethod
     def _set_bundle_operators(cluster, *operators):
         # Create operators bundle , remove duplicate
@@ -80,31 +90,31 @@ class TestRacDeployment(BaseTest):
     @pytest.fixture
     def cluster_networks(self, cluster):
         rac_networks = []  # used for cleanup
-        rac_net = copy.deepcopy(self.RAC_NETWORKS[0]['cidr'])  # same for all dns server - rac scan and vip
         for network in self.RAC_NETWORKS:
             rac_builder = RacNetworkBuilder(RacNetwork())
             rac_builder.build_bridge_network(bridge_name=network['name'], bridge_mac=generate_mac(),
-                                             domain_name="oracle-rac.openinfra.lab",
+                                             domain_name=self.RAC_DNS['domain'],
                                              bridge_ipv4=str(network['cidr'].ip + 1),
                                              bridge_ipv4_subnet="24")
 
-            rac_builder.build_rac_vip_network(vip1_ipv4=str(rac_net.ip + 201),
-                                              vip1_host="oralab1-vip.oracle-rac.openinfra.lab",
-                                              vip2_ipv4=str(rac_net.ip + 202),
-                                              vip2_host="oralab2-vip.oracle-rac.openinfra.lab")
+            rac_builder.build_rac_vip_network(vip1_ipv4=self.RAC_DNS['vip1']["ip"],
+                                              vip1_host=f"{self.RAC_DNS['vip1']["dns"]}.{self.RAC_DNS['domain']}",
+                                              vip2_ipv4=self.RAC_DNS['vip2']["ip"],
+                                              vip2_host=f"{self.RAC_DNS['vip2']["dns"]}.{self.RAC_DNS['domain']}")
 
-            rac_builder.build_rac_scan_network(scan1_ipv4=str(rac_net.ip + 69), scan2_ipv4=str(rac_net.ip + 70),
-                                               scan3_ipv4=str(rac_net.ip + 71),
-                                               scan_host="oralab-scan.oracle-rac.openinfra.lab")
+            rac_builder.build_rac_scan_network(scan1_ipv4=self.RAC_DNS['scan']['ip'][0],
+                                               scan2_ipv4=self.RAC_DNS['scan']['ip'][1],
+                                               scan3_ipv4=self.RAC_DNS['scan']['ip'][2],
+                                               scan_host=f"{self.RAC_DNS['scan']['dns']}.{self.RAC_DNS['domain']}")
             # Need to save the MACs for later when creating interfaces on OCPv , ip allocation per MAC
             rac1_mac = network['macs'][0]
             rac2_mac = network['macs'][1]
             rac_builder.build_rac_dhcp(bridge_dhcp_start_ipv4=str(network['cidr'].ip + 2),
                                        bridge_dhcp_end_ipv4=str(network['cidr'].ip + 32),
-                                       rac1_mac=rac1_mac, rac1_hostname="oralab1",
-                                       rac1_ipv4=str(network['cidr'].ip + 101),
-                                       rac2_mac=rac2_mac, rac2_hostname="oralab2",
-                                       rac2_ipv4=str(network['cidr'].ip + 102))
+                                       rac1_mac=rac1_mac, rac1_hostname=self.RAC_DNS['node1']['dns'],
+                                       rac1_ipv4=self.RAC_DNS['node1']['ip'],
+                                       rac2_mac=rac2_mac, rac2_hostname=self.RAC_DNS['node2']['dns'],
+                                       rac2_ipv4=self.RAC_DNS['node1']['ip'])
 
             director = TemplateDirector(template_builder=rac_builder)
             params = director.j2_params()
@@ -252,5 +262,6 @@ class TestRacDeployment(BaseTest):
         logging.info(f"cluster api and id: {str(cluster_networks.get_details().api_vips)}")
         logging.info(f"cluster web ui credentials: "
                      f"{str(cluster_networks.api_client.get_cluster_admin_credentials(cluster_networks.id))}")
+        # rac installation on VMs.
 
 
