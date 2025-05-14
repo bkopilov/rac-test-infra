@@ -8,7 +8,10 @@ from api_tests.common.ocp_storage import PersistentVolumeClaimBuilder, Persisten
 from api_tests.common.ocp_virtual_machine import VirtualMachineBuilder, VirtualMachine
 from api_tests.common.builder_template import generate_builder, TemplateDirector
 from api_tests.common.libivrt_network import RacInterfaceBuilder, RacInterface
-from api_tests.common.commands.oc_commands import oc_select, oc_create, oc_node_interfaces_ip, run_shell_command
+from api_tests.common.commands.oc_commands import oc_select, oc_create, oc_node_interfaces_ip
+from api_tests.common.commands.shell_commands import run_shell_command
+from api_tests.common.commands.node_commands import NodeSshHandler
+
 from api_tests.common.utils import generate_mac
 from netaddr import IPNetwork
 
