@@ -11,6 +11,7 @@ from api_tests.common.libivrt_network import RacInterfaceBuilder, RacInterface
 from api_tests.common.commands.oc_commands import oc_select, oc_create, oc_node_interfaces_ip
 from api_tests.common.commands.shell_commands import run_shell_command
 from api_tests.common.commands.node_commands import NodeSshHandler
+from api_tests.common.oracle21c_rac.rac_builder import Builder21cRac, RacDirector
 
 from api_tests.common.utils import generate_mac
 from netaddr import IPNetwork
@@ -18,7 +19,7 @@ from netaddr import IPNetwork
 import copy
 import libvirt
 import pytest
-
+import time
 logger = logging.getLogger(__name__)
 
 CPU_CORES = 60
@@ -115,9 +116,9 @@ class TestRacDeployment(BaseTest):
             rac_builder.build_rac_dhcp(bridge_dhcp_start_ipv4=str(network['cidr'].ip + 2),
                                        bridge_dhcp_end_ipv4=str(network['cidr'].ip + 32),
                                        rac1_mac=rac1_mac, rac1_hostname=self.RAC_DNS['node1']['dns'],
-                                       rac1_ipv4=self.RAC_DNS['node1']['ip'],
+                                       rac1_ipv4=str(network['cidr'].ip + 101),
                                        rac2_mac=rac2_mac, rac2_hostname=self.RAC_DNS['node2']['dns'],
-                                       rac2_ipv4=self.RAC_DNS['node1']['ip'])
+                                       rac2_ipv4=str(network['cidr'].ip + 102))
 
             director = TemplateDirector(template_builder=rac_builder)
             params = director.j2_params()
@@ -201,6 +202,7 @@ class TestRacDeployment(BaseTest):
             params = director.j2_params()
             output = generate_builder("NodeNetworkConfigurationPolicy.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
+            time.sleep(5)
 
     def _build_ocpv_network_attachment(self):
         # Add network attachments definitions - contains the bridge name mapped to port, used by virtual machines
@@ -211,6 +213,7 @@ class TestRacDeployment(BaseTest):
             params = director.j2_params()
             output = generate_builder("NetworkAttachmentDefinition.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
+            time.sleep(5)
 
     def _build_ocpv_storage_pvc(self):
         # RAC will run with 3 shared volumes volume names shared-volume1 , shared-volume2, shared-volume3
@@ -223,6 +226,7 @@ class TestRacDeployment(BaseTest):
             params = director.j2_params()
             output = generate_builder("PersistentVolumeClaim.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
+            time.sleep(5)
 
     def _build_ocpv_vms(self):
         """Create 2 VMs inside OCP with 3 nics for rac accessible from hypervisor"""
@@ -243,6 +247,19 @@ class TestRacDeployment(BaseTest):
             params = director.j2_params()
             output = generate_builder("VirtualMachine.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
+            time.sleep(5)
+
+    def _build_rac_cluster(self):
+        rac_builder = Builder21cRac(download_binaries=["http://10.9.76.8:8888/LINUX.X64_213000_grid_home.zip",
+                                                       "http://10.9.76.8:8888/LINUX.X64_213000_db_home.zip"])
+        user = "cloud-user"
+        private_key = "/root/.ssh/id_rsa"
+        ssh_handlers = [NodeSshHandler(ipv4_address=self.RAC_DNS['node1']['ip'], username=user,
+                                       private_ssh_key_path=private_key),
+                        NodeSshHandler(ipv4_address=self.RAC_DNS['node2']['ip'], username=user,
+                                       private_ssh_key_path=private_key)]
+        rac_director = RacDirector(rac_builder=rac_builder, ssh_handlers=ssh_handlers)
+        rac_director.build()
 
 
     @pytest.mark.rac
@@ -260,11 +277,16 @@ class TestRacDeployment(BaseTest):
         # allow ssh from running test-infra hypervisor to the RAC nodes
         run_shell_command(cmd="oc create secret generic ssh-key --from-file=ssh-privatekey=/root/.ssh/id_rsa "
                               "--from-file=ssh-publickey=/root/.ssh/id_rsa.pub")
+
         self._build_ocpv_vms()
         logging.info(f"kubeconfig path:{cluster_networks._config.kubeconfig_path}")
         logging.info(f"cluster api and id: {str(cluster_networks.get_details().api_vips)}")
         logging.info(f"cluster web ui credentials: "
                      f"{str(cluster_networks.api_client.get_cluster_admin_credentials(cluster_networks.id))}")
         # rac installation on VMs.
+        run_shell_command("cp /dev/null /root/.ssh/known_hosts")
+        self._build_rac_cluster()
+        print("EOF")
+
 
 
