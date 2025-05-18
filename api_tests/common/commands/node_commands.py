@@ -20,7 +20,7 @@ class NodeSshHandler(SshConnection):
         return self._ip
 
     def execute(self, command, timeout=120, verbose=False):
-        logging.info(f' ===>> {self.ssh_ipv4} -> Executing:\n {command}\n<<===')
+        logging.info(f'\===>> {self.ssh_ipv4} -> Executing:\n {command}\n<<===\n')
         return super().execute(command, timeout, verbose)
 
     def upload_file(self, local_source_path, remote_target_path):
