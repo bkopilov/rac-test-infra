@@ -13,8 +13,9 @@ class UsersManagement21cRac(UsersManagement):
     # sudo groupadd -g 54321 oinstall
     sudo groupadd -g 54331 asmdba
     sudo groupadd -g 54332 asmadmin
-    # sudo useradd -g oinstall -G asmdba,asmadmin oracle
-        
+    sudo useradd -g oinstall -G asmdba,asmadmin oracle
+    sudo usermod -a -G asmadmin oracle
+    sudo usermod -a -G asmdba oracle
     """
 
     @classmethod
@@ -43,6 +44,26 @@ class UsersManagement21cRac(UsersManagement):
         """
 
     @classmethod
+    def enable_services(cls):
+        return """
+        sudo -i systemctl enable chronyd.service
+        sudo -i chronyc -a 'burst 4/4'
+        sudo -i chronyc -a makestep 
+        sudo -i bash -c "echo 'server clock.redhat.com' >> /etc/chrony.conf"
+        sudo -i systemctl restart chronyd
+        """
+
+    @classmethod
+    def create_swap(cls):
+        return """
+        sudo -i bash -c "dd if=/dev/zero of=/swap.img bs=1 count=0 seek=17G"
+        sudo -i bash -c "losetup /dev/loop0 /swap.img"
+        sudo -i bash -c "mkswap /dev/loop0"
+        sudo -i bash -c "swapon -v /dev/loop0"
+        sudo -i bash -c "echo '/dev/loop0   none                    swap    defaults        0 0' >> /etc/fstab"
+        """
+
+    @classmethod
     def update_authorized_key(cls, id_rsa_pub):
         return f""" 
         echo "12345678" | su - oracle bash -c "echo '{id_rsa_pub}' >> /home/oracle/.ssh/authorized_keys"
@@ -52,4 +73,10 @@ class UsersManagement21cRac(UsersManagement):
     def ssh_key_scans(cls, ipv4_address):
         return f"""
         echo "12345678" | su - oracle bash -c "ssh-keyscan -H {ipv4_address} >> /home/oracle/.ssh/known_hosts"
+        """
+
+    @classmethod
+    def ssh_strict_host_checking(cls):
+        return f"""
+                echo "12345678" | su - oracle bash -c "echo -e 'Host *\n StrictHostKeyChecking no'>/home/oracle/.ssh/config"
         """

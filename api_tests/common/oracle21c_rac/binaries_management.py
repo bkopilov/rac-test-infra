@@ -20,12 +20,12 @@ class Binaries21cRac(BinariesManagement):
     @classmethod
     def copy_qdisk(cls):
         return """
-        sudo dnf install -y /u01/app/21.0.0/grid/cv/rpm/cvuqdisk-1.0.10-1.rpm
+        sudo -i dnf install -y /u01/app/21.0.0/grid/cv/rpm/cvuqdisk-1.0.10-1.rpm
         echo "12345678" | su - oracle bash -c "scp /u01/app/21.0.0/grid/cv/rpm/cvuqdisk-1.0.10-1.rpm oracle@oralab2:/tmp"    
         """
 
     @classmethod
     def install_qdisk(cls, cvuqdisk_path):
         return f"""
-        sudo dnf install -y {cvuqdisk_path}
+        sudo -i dnf install -y {cvuqdisk_path}
         """

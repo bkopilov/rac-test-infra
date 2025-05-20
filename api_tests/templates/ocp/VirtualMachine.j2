@@ -18,7 +18,7 @@ spec:
         storage:
           resources:
             requests:
-              storage: 30Gi
+              storage: 50Gi
   runStrategy: RerunOnFailure
   template:
     metadata:
@@ -53,15 +53,15 @@ spec:
                 bus: virtio
               name: cloudinitdisk
             - disk:
-                bus: virtio
+                bus: {{disk_bus}}
               name: {{volume1}}
               shareable: true
             - disk:
-                bus: virtio
+                bus: {{disk_bus}}
               name: {{volume2}}
               shareable: true
             - disk:
-                bus: virtio
+                bus: {{disk_bus}}
               name: {{volume3}}
               shareable: true
           interfaces:

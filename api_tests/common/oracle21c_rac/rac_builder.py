@@ -3,6 +3,7 @@ from .users_management import UsersManagement21cRac
 from .package_installation import PackageInstallation21cRac
 from .binaries_management import Binaries21cRac
 from .grid_management import GridManagement21cRac
+from .asm_disks import AsmDisks21cRac
 
 
 class RacBuilder:
@@ -10,13 +11,15 @@ class RacBuilder:
 
 
 class Builder21cRac(RacBuilder):
-    def __init__(self, download_binaries):
+    def __init__(self, download_binaries, disks=("sda", "sdb", "sdc")):
         self.repo_creation = RepoCreation21cRac
         self.package_installation = PackageInstallation21cRac
         self.user_management = UsersManagement21cRac
         self.binaries_management = Binaries21cRac
         self.grid_management = GridManagement21cRac
-        self.download_binaries = download_binaries
+        self.binaries = download_binaries
+        self.asm_disks = AsmDisks21cRac
+        self.disks = disks
 
     def create_repo(self, ssh_handlers):
         ssl_verify_cmd = self.repo_creation.create_ssl_verify()
@@ -34,10 +37,17 @@ class Builder21cRac(RacBuilder):
         groups_cmd = self.user_management.create_users_group()
         ssh_keys_cmd = self.user_management.create_ssh_keys()
         directories_cmd = self.user_management.create_directories()
+        services_cmd = self.user_management.enable_services()
         for ssh_handler in ssh_handlers:
             ssh_handler.execute(groups_cmd)
             ssh_handler.execute(ssh_keys_cmd)
             ssh_handler.execute(directories_cmd)
+            ssh_handler.execute(services_cmd)
+
+    def create_swap(self, ssh_handlers):
+        swap_cmd = self.user_management.create_swap()
+        for ssh_handler in ssh_handlers:
+            ssh_handler.execute(swap_cmd)
 
     def create_authorized_keys(self, ssh_handlers):
         get_public_cmd = self.user_management.get_public_key()
@@ -49,6 +59,10 @@ class Builder21cRac(RacBuilder):
         ssh_handlers[0].execute(update_public2)
         ssh_handlers[1].execute(update_public1)
 
+        cmd_strict_check = self.user_management.ssh_strict_host_checking()
+        ssh_handlers[0].execute(cmd_strict_check)
+        ssh_handlers[1].execute(cmd_strict_check)
+
     def create_ssh_known_hosts(self, ssh_handlers):
         key_scan1_cmd = self.user_management.ssh_key_scans(ssh_handlers[0].ssh_ipv4)
         key_scan2_cmd = self.user_management.ssh_key_scans(ssh_handlers[1].ssh_ipv4)
@@ -56,12 +70,12 @@ class Builder21cRac(RacBuilder):
         ssh_handlers[1].execute(key_scan1_cmd)
 
     def download_binaries(self, ssh_handler):
-        for bin_download in self.download_binaries:
+        for bin_download in self.binaries:
             cmd = self.binaries_management.download_binaries(bin_download)
             ssh_handler.execute(cmd)
 
     def unzip_grid(self, ssh_handler):
-        cmd = self.binaries_management.unzip_grid_binary(self.download_binaries[0])
+        cmd = self.binaries_management.unzip_grid_binary(self.binaries[0])
         ssh_handler.execute(cmd)
 
     def install_qdisk(self, ssh_handlers):
@@ -76,6 +90,30 @@ class Builder21cRac(RacBuilder):
         cmd = self.grid_management.validate_grid_preinstall()
         ssh_handler.execute(cmd)
 
+    def create_asm_disks(self, ssh_handlers):
+        # create disk partition on node1 - shared disks
+        for disk in self.disks:
+            cmd = self.asm_disks.create_disk_partition(disk)
+            ssh_handlers[0].execute(cmd)
+
+        for ssh_handler in ssh_handlers:
+            disks_asm = []
+            for disk in self.disks:
+                disk_id_cmd = self.asm_disks.create_scsi_id(disk)
+                disk_id = ssh_handler.execute(disk_id_cmd)
+                if disk_id:
+                    disks_asm.append(disk_id.strip())
+            assert len(disks_asm) == 3
+            user_rules_cmd = self.asm_disks.create_udev(disks_asm[0], disks_asm[1], disks_asm[2])
+            ssh_handler.execute(user_rules_cmd)
+            reload_rules_cmd = self.asm_disks.reload_udev_rules()
+            ssh_handler.execute(reload_rules_cmd)
+
+    def sync_disk(self, ssh_handlers):
+        cmd = self.asm_disks.sync_disks()
+        for ssh_handler in ssh_handlers:
+            ssh_handler.execute(cmd)
+
 
 class RacDirector:
     def __init__(self, rac_builder, ssh_handlers):
@@ -89,5 +127,9 @@ class RacDirector:
         self.rac_builder.create_authorized_keys(self.ssh_handlers)
         self.rac_builder.create_ssh_known_hosts(self.ssh_handlers)
         self.rac_builder.download_binaries(self.ssh_handlers[0])
+        self.rac_builder.unzip_grid(self.ssh_handlers[0])
         self.rac_builder.install_qdisk(self.ssh_handlers)
+        self.rac_builder.create_swap(self.ssh_handlers)
         self.rac_builder.install_grid_perinstall(self.ssh_handlers[0])
+        self.rac_builder.create_asm_disks(self.ssh_handlers[0])
+        self.rac_builder.sync_disk(self.ssh_handlers)

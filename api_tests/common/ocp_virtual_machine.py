@@ -11,6 +11,7 @@ class VirtualMachine:
         self.volume1 = None
         self.volume2 = None
         self.volume3 = None
+        self.disk_bus = None
         self.interface_name1 = None
         self.interface_name2 = None
         self.interface_name3 = None
@@ -21,12 +22,13 @@ class VirtualMachine:
 
 class VirtualMachineBuilder(TemplateBuilder):
     """Update VirtualMachine product params"""
-    def build_storage(self, node_name, ssh_key_name, volume1, volume2, volume3):
+    def build_storage(self, node_name, ssh_key_name, volume1, volume2, volume3, disk_bus="scsi"):
         self.template.node_name = node_name
         self.template.ssh_key_name = ssh_key_name
         self.template.volume1 = volume1
         self.template.volume2 = volume2
         self.template.volume3 = volume3
+        self.template.disk_bus = disk_bus
 
     def build_network(self, interface_name1, interface_name2, interface_name3,
                       mac_address1, mac_address2, mac_address3):

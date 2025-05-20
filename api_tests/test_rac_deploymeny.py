@@ -232,10 +232,11 @@ class TestRacDeployment(BaseTest):
         """Create 2 VMs inside OCP with 3 nics for rac accessible from hypervisor"""
         for index in range(2):
             vm_builder = VirtualMachineBuilder(VirtualMachine())
-            vm_builder.build_storage(node_name="node" + str(index + 1), ssh_key_name="ssh-key",
+            vm_builder.build_storage(node_name="oralab" + str(index + 1), ssh_key_name="ssh-key",
                                      volume1="volume" + str(1),
                                      volume2="volume" + str(2),
-                                     volume3="volume" + str(3))
+                                     volume3="volume" + str(3),
+                                     disk_bus="scsi")
 
             vm_builder.build_network(interface_name1=self.RAC_NETWORKS[0]['name'],
                                      interface_name2=self.RAC_NETWORKS[1]['name'],

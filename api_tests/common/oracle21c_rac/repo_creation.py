@@ -35,4 +35,5 @@ best=True
 sslverify={ssl_verify}
 EOF"
 sudo cp  /tmp/yum.conf  /etc/yum.conf
+sudo -i setenforce 0
 '''
