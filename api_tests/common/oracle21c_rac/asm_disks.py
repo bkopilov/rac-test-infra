@@ -33,6 +33,7 @@ EOF
         return """
         sudo -i /sbin/udevadm control --reload-rules
         sudo -i /sbin/udevadm trigger --action=add
+        sudo sleep 3
         sudo -i ls -l /dev/oracleasm/
         """
 

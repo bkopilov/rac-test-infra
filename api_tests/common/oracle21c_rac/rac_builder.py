@@ -131,5 +131,5 @@ class RacDirector:
         self.rac_builder.install_qdisk(self.ssh_handlers)
         self.rac_builder.create_swap(self.ssh_handlers)
         self.rac_builder.install_grid_perinstall(self.ssh_handlers[0])
-        self.rac_builder.create_asm_disks(self.ssh_handlers[0])
+        self.rac_builder.create_asm_disks(self.ssh_handlers)
         self.rac_builder.sync_disk(self.ssh_handlers)

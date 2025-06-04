@@ -19,7 +19,7 @@ class NodeSshHandler(SshConnection):
     def ssh_ipv4(self):
         return self._ip
 
-    def execute(self, command, timeout=120, verbose=False):
+    def execute(self, command, timeout=180, verbose=False):
         logging.info(f'\n===>> {self.ssh_ipv4} -> Executing:\n {command}\n<<===\n')
         return super().execute(command, timeout, verbose)
 
@@ -41,7 +41,7 @@ class NodeSshHandler(SshConnection):
             % dict(hostname=self._ip, port=self._port)
         )
 
-    def connect(self, timeout=60):
+    def connect(self, timeout=120):
         logging.info("Going to connect to ip %s", self._ip)
         self.wait_for_tcp_server()
         self._ssh_client = paramiko.SSHClient()

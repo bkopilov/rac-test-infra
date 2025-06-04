@@ -5,6 +5,7 @@ ip = os.getenv("SERVER_IP", "10.9.76.8")
 port = int(os.getenv("SERVER_PORT", 8888))
 
 # Run http server to enable download RAC zip file into the vm nodes
+# command: python3 web.py
 # will run from hypervisor
 dir = f"{os.getcwd()}/"
 os.chdir(dir)
