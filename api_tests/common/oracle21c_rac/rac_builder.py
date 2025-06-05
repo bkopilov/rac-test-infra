@@ -64,8 +64,8 @@ class Builder21cRac(RacBuilder):
         ssh_handlers[1].execute(cmd_strict_check)
 
     def create_ssh_known_hosts(self, ssh_handlers):
-        key_scan1_cmd = self.user_management.ssh_key_scans(ssh_handlers[0].ssh_ipv4)
-        key_scan2_cmd = self.user_management.ssh_key_scans(ssh_handlers[1].ssh_ipv4)
+        key_scan1_cmd = self.user_management.ssh_key_scans(ssh_handlers[0].ssh_ipv4, ssh_handlers[0].hostname)
+        key_scan2_cmd = self.user_management.ssh_key_scans(ssh_handlers[1].ssh_ipv4, ssh_handlers[1].hostname)
         ssh_handlers[0].execute(key_scan2_cmd)
         ssh_handlers[1].execute(key_scan1_cmd)
 
@@ -92,6 +92,25 @@ class Builder21cRac(RacBuilder):
             ssh_handler.execute(cmd, ignore_errors=True)
         except Exception as e:
             print(e)
+
+    def install_grid_phase1(self, ssh_handler, **params):
+        cmd = self.grid_management.grid_install_phase1(**params)
+        ssh_handler.execute(cmd, timeout=1800)
+
+    def install_grid_phase2(self, ssh_handlers):
+        cmd1 = self.grid_management.grid_install_phase2_1()
+        cmd2 = self.grid_management.grid_install_phase2_2()
+        for ssh_handler in ssh_handlers:
+            ssh_handler.execute(cmd1, timeout=1800)
+            ssh_handler.execute(cmd2, timeout=1800)
+
+    def install_grid_phase3(self, ssh_handler, **params):
+        cmd = self.grid_management.grid_install_phase3(**params)
+        ssh_handler.execute(cmd, timeout=1800)
+
+    def verify_grid_status(self, ssh_handler):
+        cmd = self.grid_management.grid_crsctl_stat()
+        ssh_handler.execute(cmd)
 
     def create_partitions(self, ssh_handler):
         # create disk partition on node1 - shared disks
@@ -139,3 +158,7 @@ class RacDirector:
         self.rac_builder.sync_disk(self.ssh_handlers)
         self.rac_builder.create_asm_disks(self.ssh_handlers)
         self.rac_builder.sync_disk(self.ssh_handlers)
+        self.rac_builder.install_grid_phase1(self.ssh_handlers[0])
+        self.rac_builder.install_grid_phase2(self.ssh_handlers)
+        self.rac_builder.install_grid_phase3(self.ssh_handlers[0])
+        self.rac_builder.verify_grid_status(self.ssh_handlers[0])

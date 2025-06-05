@@ -70,9 +70,10 @@ class UsersManagement21cRac(UsersManagement):
         """
 
     @classmethod
-    def ssh_key_scans(cls, ipv4_address):
+    def ssh_key_scans(cls, ipv4_address, hostname):
         return f"""
         echo "12345678" | su - oracle bash -c "ssh-keyscan -H {ipv4_address} >> /home/oracle/.ssh/known_hosts"
+        echo "12345678" | su - oracle bash -c "ssh-keyscan -H {hostname} >> /home/oracle/.ssh/known_hosts"
         """
 
     @classmethod

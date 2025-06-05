@@ -10,10 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class NodeSshHandler(SshConnection):
-    def __init__(self, ipv4_address, username, private_ssh_key_path=None, password=None, port=22):
+    def __init__(self, ipv4_address, username, hostname, private_ssh_key_path=None, password=None, port=22):
         super().__init__(ip=ipv4_address, private_ssh_key_path=private_ssh_key_path, username=username, port=port)
         self._ssh_client = None
         self.password = password
+        self.hostname = hostname
 
     @property
     def ssh_ipv4(self):

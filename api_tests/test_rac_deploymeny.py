@@ -256,9 +256,9 @@ class TestRacDeployment(BaseTest):
         user = "cloud-user"
         private_key = "/root/.ssh/id_rsa"
         ssh_handlers = [NodeSshHandler(ipv4_address=self.RAC_DNS['node1']['ip'], username=user,
-                                       private_ssh_key_path=private_key),
+                                       hostname=self.RAC_DNS['node1']['dns'], private_ssh_key_path=private_key),
                         NodeSshHandler(ipv4_address=self.RAC_DNS['node2']['ip'], username=user,
-                                       private_ssh_key_path=private_key)]
+                                       hostname=self.RAC_DNS['node2']['dns'], private_ssh_key_path=private_key)]
         rac_director = RacDirector(rac_builder=rac_builder, ssh_handlers=ssh_handlers)
         rac_director.build()
 
