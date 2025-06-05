@@ -88,14 +88,18 @@ class Builder21cRac(RacBuilder):
 
     def install_grid_perinstall(self, ssh_handler):
         cmd = self.grid_management.validate_grid_preinstall()
-        ssh_handler.execute(cmd)
+        try:
+            ssh_handler.execute(cmd, ignore_errors=True)
+        except Exception as e:
+            print(e)
 
-    def create_asm_disks(self, ssh_handlers):
+    def create_partitions(self, ssh_handler):
         # create disk partition on node1 - shared disks
         for disk in self.disks:
             cmd = self.asm_disks.create_disk_partition(disk)
-            ssh_handlers[0].execute(cmd)
+            ssh_handler.execute(cmd)
 
+    def create_asm_disks(self, ssh_handlers):
         for ssh_handler in ssh_handlers:
             disks_asm = []
             for disk in self.disks:
@@ -131,5 +135,7 @@ class RacDirector:
         self.rac_builder.install_qdisk(self.ssh_handlers)
         self.rac_builder.create_swap(self.ssh_handlers)
         self.rac_builder.install_grid_perinstall(self.ssh_handlers[0])
+        self.rac_builder.create_partitions(self.ssh_handlers[0])
+        self.rac_builder.sync_disk(self.ssh_handlers)
         self.rac_builder.create_asm_disks(self.ssh_handlers)
         self.rac_builder.sync_disk(self.ssh_handlers)
