@@ -251,6 +251,7 @@ class TestRacDeployment(BaseTest):
             time.sleep(5)
 
     def _build_rac_cluster(self):
+        # Created dummy web server on running hypervisr to download binaries
         rac_builder = Builder21cRac(download_binaries=["http://10.9.76.8:8888/LINUX.X64_213000_grid_home.zip",
                                                        "http://10.9.76.8:8888/LINUX.X64_213000_db_home.zip"])
         user = "cloud-user"

@@ -3,12 +3,14 @@ from .users_management import UsersManagement21cRac
 from .package_installation import PackageInstallation21cRac
 from .binaries_management import Binaries21cRac
 from .grid_management import GridManagement21cRac
+from .database_management import DataBaseManagement21cRac
 from .asm_disks import AsmDisks21cRac
 
 
 class RacBuilder:
     pass
 
+INSTALLATION_TIMEOUT = 1800
 
 class Builder21cRac(RacBuilder):
     def __init__(self, download_binaries, disks=("sda", "sdb", "sdc")):
@@ -17,6 +19,7 @@ class Builder21cRac(RacBuilder):
         self.user_management = UsersManagement21cRac
         self.binaries_management = Binaries21cRac
         self.grid_management = GridManagement21cRac
+        self.data_base_management = DataBaseManagement21cRac
         self.binaries = download_binaries
         self.asm_disks = AsmDisks21cRac
         self.disks = disks
@@ -78,6 +81,10 @@ class Builder21cRac(RacBuilder):
         cmd = self.binaries_management.unzip_grid_binary(self.binaries[0])
         ssh_handler.execute(cmd)
 
+    def unzip_database(self, ssh_handler):
+        cmd = self.binaries_management.unzip_database_binary(self.binaries[1])
+        ssh_handler.execute(cmd)
+
     def install_qdisk(self, ssh_handlers):
         cmd = self.binaries_management.copy_qdisk()
         ssh_handlers[0].execute(cmd)
@@ -95,22 +102,30 @@ class Builder21cRac(RacBuilder):
 
     def install_grid_phase1(self, ssh_handler, **params):
         cmd = self.grid_management.grid_install_phase1(**params)
-        ssh_handler.execute(cmd, timeout=1800)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
 
     def install_grid_phase2(self, ssh_handlers):
         cmd1 = self.grid_management.grid_install_phase2_1()
         cmd2 = self.grid_management.grid_install_phase2_2()
         for ssh_handler in ssh_handlers:
-            ssh_handler.execute(cmd1, timeout=1800)
-            ssh_handler.execute(cmd2, timeout=1800)
+            ssh_handler.execute(cmd1, timeout=INSTALLATION_TIMEOUT)
+            ssh_handler.execute(cmd2, timeout=INSTALLATION_TIMEOUT)
 
     def install_grid_phase3(self, ssh_handler, **params):
         cmd = self.grid_management.grid_install_phase3(**params)
-        ssh_handler.execute(cmd, timeout=1800)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+
+    def create_database_groups(self, ssh_handler):
+        cmd_data = self.data_base_management.create_data_disk_group()
+        cmd_recovery = self.data_base_management.create_recovery_disk_group()
+        ssh_handler.execute(cmd_data, timeout=INSTALLATION_TIMEOUT)
+        ssh_handler.execute(cmd_recovery, timeout=INSTALLATION_TIMEOUT)
 
     def verify_grid_status(self, ssh_handler):
-        cmd = self.grid_management.grid_crsctl_stat()
-        ssh_handler.execute(cmd)
+        cmd_grid = self.grid_management.grid_crsctl_stat()
+        cmd_disk_group = self.grid_management.grid_disk_group_stat()
+        ssh_handler.execute(cmd_grid)
+        ssh_handler.execute(cmd_disk_group)
 
     def create_partitions(self, ssh_handler):
         # create disk partition on node1 - shared disks
@@ -137,6 +152,19 @@ class Builder21cRac(RacBuilder):
         for ssh_handler in ssh_handlers:
             ssh_handler.execute(cmd)
 
+    def install_database_phase1(self, ssh_handler):
+        cmd = self.data_base_management.install_database_phase1()
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+
+    def install_database_phase2(self, ssh_handlers):
+        cmd = self.data_base_management.install_database_phase2()
+        for ssh_handler in ssh_handlers:
+            ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+
+    def install_database_phase3(self, ssh_handler):
+        cmd = self.data_base_management.install_database_phase3()
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+
 
 class RacDirector:
     def __init__(self, rac_builder, ssh_handlers):
@@ -162,3 +190,9 @@ class RacDirector:
         self.rac_builder.install_grid_phase2(self.ssh_handlers)
         self.rac_builder.install_grid_phase3(self.ssh_handlers[0])
         self.rac_builder.verify_grid_status(self.ssh_handlers[0])
+        self.rac_builder.create_database_groups(self.ssh_handlers[0])
+
+        self.rac_builder.unzip_database(self.ssh_handlers[0])
+        self.rac_builder.install_database_phase1(self.ssh_handlers[0])
+        self.rac_builder.install_database_phase2(self.ssh_handlers)
+        self.rac_builder.install_database_phase3(self.ssh_handlers[0])

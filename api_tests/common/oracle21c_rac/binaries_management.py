@@ -18,6 +18,12 @@ class Binaries21cRac(BinariesManagement):
         """
 
     @classmethod
+    def unzip_database_binary(cls, url):
+        return f"""
+        echo "12345678" | su - oracle bash -c "unzip /tmp/{url.split("/")[-1]} -d /u01/app/oracle/product/21.0.0.0/dbhome_1"
+        """
+
+    @classmethod
     def copy_qdisk(cls):
         return """
         sudo -i dnf install -y /u01/app/21.0.0/grid/cv/rpm/cvuqdisk-1.0.10-1.rpm

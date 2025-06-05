@@ -1,4 +1,4 @@
-from api_tests.common.builder_template import generate_builder
+
 
 class GridManagement:
     pass
@@ -117,3 +117,9 @@ class GridManagement21cRac(GridManagement):
         return """
         echo "12345678" | su - oracle bash -c "/u01/app/21.0.0/grid/bin/crsctl stat res -t"
     """
+
+    @classmethod
+    def grid_disk_group_stat(cls):
+        return """
+        echo "12345678" | su - oracle bash -c "/u01/app/21.0.0/grid/bin/asmcmd -p lsdg"
+        """
