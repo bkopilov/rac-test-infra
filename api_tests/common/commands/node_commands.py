@@ -21,7 +21,7 @@ class NodeSshHandler(SshConnection):
         return self._ip
 
     def execute(self, command, timeout=180, verbose=False, ignore_errors=False):
-        logging.info(f'\n-->> {self.ssh_ipv4}|ignore_error={ignore_errors}|->Executing:\n {command}')
+        logging.info(f'\n-->>{self.ssh_ipv4}|ignore_error={ignore_errors}|->Executing:\n{command}')
         output = None
         try:
             output = super().execute(command, timeout, verbose)
