@@ -20,6 +20,7 @@ class Binaries21cRac(BinariesManagement):
     @classmethod
     def unzip_database_binary(cls, url):
         return f"""
+        echo "12345678" | su - oracle bash -c "mkdir -p /u01/app/oracle/product/21.0.0.0/dbhome_1"
         echo "12345678" | su - oracle bash -c "unzip /tmp/{url.split("/")[-1]} -d /u01/app/oracle/product/21.0.0.0/dbhome_1"
         """
 
