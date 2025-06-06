@@ -82,8 +82,10 @@ class Builder21cRac(RacBuilder):
         ssh_handler.execute(cmd)
 
     def unzip_database(self, ssh_handler):
-        cmd = self.binaries_management.unzip_database_binary(self.binaries[1])
-        ssh_handler.execute(cmd)
+        create_dir = self.binaries_management.create_database_dir()
+        unzip = self.binaries_management.unzip_database_binary(self.binaries[1])
+        ssh_handler.execute(create_dir)
+        ssh_handler.execute(unzip)
 
     def install_qdisk(self, ssh_handlers):
         cmd = self.binaries_management.copy_qdisk()
