@@ -69,7 +69,7 @@ class NodeSshHandler(SshConnection):
             % dict(hostname=self._ip, port=self._port)
         )
 
-    def connect(self, timeout=120):
+    def connect(self, timeout=180):
         logging.info("Going to connect to ip %s", self._ip)
         self.wait_for_tcp_server()
         self._ssh_client = paramiko.SSHClient()
