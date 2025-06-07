@@ -156,7 +156,7 @@ class Builder21cRac(RacBuilder):
 
     def install_database_phase1(self, ssh_handler):
         cmd = self.data_base_management.install_database_phase1()
-        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, ignore_errors=True)
 
     def install_database_phase2(self, ssh_handlers):
         cmd = self.data_base_management.install_database_phase2()

@@ -20,11 +20,11 @@ class NodeSshHandler(SshConnection):
     def ssh_ipv4(self):
         return self._ip
 
-    def execute(self, command, timeout=180, verbose=False, ignore_errors=False):
+    def execute(self, command, timeout=180, ignore_errors=False):
         logging.info(f'\n-->>{self.ssh_ipv4}|ignore_error={ignore_errors}|->Executing:\n{command}')
         output = None
         try:
-            output = super().execute(command, timeout, verbose)
+            output = self._execute(command, timeout)
             logging.info(f'\n<<-- {self.ssh_ipv4}|output:\n {output}\n')
             return output
         except Exception as e:
@@ -33,7 +33,23 @@ class NodeSshHandler(SshConnection):
                 return output
             raise e
 
+    def _execute(self, command, timeout=60):
+        if not self._ssh_client:
+            self.connect()
 
+        stdin, stdout, stderr = self._ssh_client.exec_command(command, timeout=timeout)
+        output = stdout.read()
+        error = stderr.read()
+        status = stdout.channel.recv_exit_status()
+
+        output = output.decode('utf-8')
+        if status != 0:
+            e = RuntimeError(
+                f"Failed executing, status '{status}', output was:\n{output} stderr \n{error.decode('utf-8')}"
+            )
+            e.output = output
+            raise e
+        return output
 
     def upload_file(self, local_source_path, remote_target_path):
         super().upload_file(local_source_path, remote_target_path)
