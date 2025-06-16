@@ -14,7 +14,7 @@ from tests.config import global_variables
 
 logger = logging.getLogger(__name__)
 
-VIRTUALIZATION_BUNDLE = ['lso', 'nmstate']
+VIRTUALIZATION_BUNDLE = ['nmstate']
 
 
 class TestBaremetalMachines(BaseTest):
