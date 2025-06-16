@@ -14,8 +14,7 @@ from tests.config import global_variables
 
 logger = logging.getLogger(__name__)
 
-VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'self-node-remediation', 'lso', 'nmstate', 'kube-descheduler',
-                         'node-healthcheck', 'fence-agents-remediation', 'node-maintenance']
+VIRTUALIZATION_BUNDLE = ['lso', 'nmstate']
 
 
 class TestBaremetalMachines(BaseTest):
@@ -119,7 +118,7 @@ class TestBaremetalMachines(BaseTest):
         cluster.wait_until_hosts_are_discovered(allow_insufficient=True)
         self.clean_disks(cluster)
         self._set_roles_names(cluster, masters_count)
-
+        self._set_bundle_operators(cluster)
         # Get ocp network.
         node_ip = cluster.nodes.controller.get_node_ips_and_macs("master-0")[0][0]
         api_vip, ingress = self._get_vip_ingress(node_ip)
