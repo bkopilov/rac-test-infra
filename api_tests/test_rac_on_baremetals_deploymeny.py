@@ -1,4 +1,5 @@
 import copy
+import json
 import logging
 
 from assisted_test_infra.test_infra import utils
@@ -14,17 +15,30 @@ from tests.config import global_variables
 
 logger = logging.getLogger(__name__)
 
-VIRTUALIZATION_BUNDLE = ['nmstate']
+VIRTUALIZATION_BUNDLE = ['nmstate', 'cnv', 'lso']
+DISK_INSTALLATION_TYPE="SSD"
+DISK_INSTALLATION_NAME = "nvme0n1" #assume exist on all machines
 
 
 class TestBaremetalMachines(BaseTest):
 
     @staticmethod
-    def clean_disks(cluster):
+    def _clean_disks(cluster):
         nodes = cluster.nodes
         for n in nodes:
             CleanNodeDisks(n).clean_disks()
 
+    @staticmethod
+    def _set_installation_disk(cluster, driver_type=DISK_INSTALLATION_TYPE, disk_name=DISK_INSTALLATION_NAME):
+        # Update installation disks to SSD same on all machines
+        # Driver type can be iSCSI or Multipath
+        for host in cluster.get_details().hosts:
+            host_info = {"id": host.id}
+            disks = cluster.get_host_disks(host_info,
+                                           lambda disk: disk['drive_type'] == driver_type and disk['name'] == disk_name)
+            assert len(disks) == 1, "Expected 1 disk but got %d" % len(disks)
+            first_installation_disk = json.loads(f'[{{"disk_id": "{disks[0]["id"]}", "role": "install"}}]')
+            cluster.select_installation_disk(host_id=host_info['id'], disk_paths=first_installation_disk)
 
     @staticmethod
     def _set_bundle_operators(cluster, *operators):
@@ -116,9 +130,10 @@ class TestBaremetalMachines(BaseTest):
         cluster.nodes.controller.set_adapter_controller(cluster)
         cluster.nodes.prepare_nodes()
         cluster.wait_until_hosts_are_discovered(allow_insufficient=True)
-        self.clean_disks(cluster)
+        self._clean_disks(cluster)
         self._set_roles_names(cluster, masters_count)
         self._set_bundle_operators(cluster)
+        self._set_installation_disk(cluster)
         # Get ocp network.
         node_ip = cluster.nodes.controller.get_node_ips_and_macs("master-0")[0][0]
         api_vip, ingress = self._get_vip_ingress(node_ip)
