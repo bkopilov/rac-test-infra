@@ -95,7 +95,7 @@ class GridManagement21cRac(GridManagement):
         oracle.install.crs.configureGIMR=false \
         oracle.install.crs.config.storageOption=FLEX_ASM_STORAGE \
         oracle.install.crs.config.useIPMI=false \
-        oracle.install.asm.diskGroup.name=OCR \
+        oracle.install.asm.diskGroup.name=OCR01 \
         oracle.install.asm.diskGroup.redundancy=EXTERNAL \
         oracle.install.asm.diskGroup.AUSize=4 \
         oracle.install.asm.diskGroup.disksWithFailureGroupNames=/dev/oracleasm/asmdisk1, \
