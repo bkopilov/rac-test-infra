@@ -106,13 +106,12 @@ class TestBaremetalMachines(BaseTest):
     @pytest.mark.parametrize("redfish_user", ["root"])
     @pytest.mark.parametrize("redfish_enabled", [True])
     @pytest.mark.parametrize("redfish_password", ["calvin"])
-    @pytest.mark.parametrize("masters_count", [3])
-    @pytest.mark.parametrize("workers_count", [3])
+    @pytest.mark.parametrize("masters_count", [5])
+    @pytest.mark.parametrize("workers_count", [0])
     @pytest.mark.baremetal_sanity
     def test_baremetal_rac_deployment(
             self,
             cluster,
-            record_property,
             redfish_machines,
             redfish_user,
             redfish_password,
@@ -120,7 +119,6 @@ class TestBaremetalMachines(BaseTest):
             masters_count,
             workers_count,
     ):
-        record_property("polarion-testcase-id", "OCP-32378")
         cluster.generate_and_download_infra_env()
         # NFS mount - > current running machine
         cluster.nodes.controller.set_nfs_mount_path(
