@@ -37,9 +37,9 @@ In order to access to the clusters console from laptop need to :
 - Update iptables on hypervisor to redirect access to the conole based on source and port for kubeconfig and web.
 Update /etc/hosts to the hypervisor
 Example: (ips are public address from hypervisor)
-10.9.76.8 	api.test.oracle-rac.openinfra.lab
-10.9.76.8	oauth-openshift.apps.test.oracle-rac.openinfra.lab
-10.9.76.8	console-openshift-console.apps.test.oracle-rac.openinfra.lab
+10.9.76.8 	api.[cluster__fqdn]
+10.9.76.8	oauth-openshift.apps.[cluster__fqdn]
+10.9.76.8	console-openshift-console.apps.[cluster__fqdn]
 
 From the Hypervisor need to add nat redirect to the API address on 443:
 Adding source of laptop will prevent issue with access to port 443 for other services

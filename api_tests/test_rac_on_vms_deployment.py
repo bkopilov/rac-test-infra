@@ -92,8 +92,6 @@ class TestRacDeployment(BaseTest):
 
     @pytest.fixture
     def cluster_networks(self, cluster):
-        cluster.set_cluster_name("test")
-        cluster.set_base_dns_domain(self.RAC_DNS["domain"])
         rac_networks = []  # used for cleanup
         for network in self.RAC_NETWORKS:
             rac_builder = RacNetworkBuilder(RacNetwork())
