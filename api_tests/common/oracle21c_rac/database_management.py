@@ -25,6 +25,13 @@ class DataBaseManagement21cRac(DataBaseManagement):
         """
 
     @classmethod
+    def copy_listener_ora(cls):
+        return """
+        echo "12345678" | su - oracle bash -c "cp -p /u01/app/21.0.0/grid/network/admin/listener.ora /u01/app/oracle/product/21.0.0.0/dbhome_1/network/admin/"
+
+        """
+
+    @classmethod
     def install_database_phase1(cls, **params):
         output = """
         echo "12345678" | su - oracle bash -c "/u01/app/oracle/product/21.0.0.0/dbhome_1/runInstaller -ignorePrereq -waitforcompletion -silent \

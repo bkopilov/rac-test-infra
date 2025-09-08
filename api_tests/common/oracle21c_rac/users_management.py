@@ -46,11 +46,27 @@ class UsersManagement21cRac(UsersManagement):
     @classmethod
     def enable_services(cls):
         return """
-        sudo -i systemctl enable chronyd.service
-        sudo -i chronyc -a 'burst 4/4'
-        sudo -i chronyc -a makestep 
-        sudo -i bash -c "echo 'server clock.redhat.com' >> /etc/chrony.conf"
-        sudo -i systemctl restart chronyd
+        sudo bash -c "cat > /etc/chrony.conf << EOF
+server 10.2.32.37
+server 10.2.32.38
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+leapsectz right/UTC
+EOF"
+
+sudo systemctl stop chronyd
+sudo systemctl start chronyd
+
+        """
+
+    @classmethod
+    def set_tsc_clock_source(cls):
+        return """
+        sudo bash -c "cat > /sys/devices/system/clocksource/clocksource0/current_clocksource << EOF
+tsc
+EOF"
+
         """
 
     @classmethod

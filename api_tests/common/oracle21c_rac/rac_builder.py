@@ -40,11 +40,13 @@ class Builder21cRac(RacBuilder):
         groups_cmd = self.user_management.create_users_group()
         ssh_keys_cmd = self.user_management.create_ssh_keys()
         directories_cmd = self.user_management.create_directories()
+        enable_tsc = self.user_management.set_tsc_clock_source()
         services_cmd = self.user_management.enable_services()
         for ssh_handler in ssh_handlers:
             ssh_handler.execute(groups_cmd)
             ssh_handler.execute(ssh_keys_cmd)
             ssh_handler.execute(directories_cmd)
+            ssh_handler.execute(enable_tsc)
             ssh_handler.execute(services_cmd)
 
     def create_swap(self, ssh_handlers):
@@ -155,6 +157,9 @@ class Builder21cRac(RacBuilder):
             ssh_handler.execute(cmd)
 
     def install_database_phase1(self, ssh_handler):
+        copy_listener_ora = self.data_base_management.copy_listener_ora()
+        ssh_handler.execute(copy_listener_ora, timeout=INSTALLATION_TIMEOUT, ignore_errors=True)
+
         cmd = self.data_base_management.install_database_phase1()
         ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, ignore_errors=True)
 
