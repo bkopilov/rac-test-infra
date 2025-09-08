@@ -99,8 +99,6 @@ class CleanNodeDisks:
     def clean_disks(self):
         disks_clean_action = OrderedDict()
         disks_clean_action["lvm"] = self._clean_lvm
-        disks_clean_action["md"] = self._clean_raid
-        disks_clean_action["raid"] = self._clean_raid
         disks_clean_action["disk"] = self._clean_disk
 
         for disk_type, func in disks_clean_action.items():
