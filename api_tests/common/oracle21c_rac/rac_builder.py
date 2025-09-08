@@ -100,7 +100,7 @@ class Builder21cRac(RacBuilder):
     def install_grid_perinstall(self, ssh_handler):
         cmd = self.grid_management.validate_grid_preinstall()
         try:
-            ssh_handler.execute(cmd, ignore_errors=True)
+            ssh_handler.execute(cmd)
         except Exception as e:
             print(e)
 
@@ -158,10 +158,10 @@ class Builder21cRac(RacBuilder):
 
     def install_database_phase1(self, ssh_handler):
         copy_listener_ora = self.data_base_management.copy_listener_ora()
-        ssh_handler.execute(copy_listener_ora, timeout=INSTALLATION_TIMEOUT, ignore_errors=True)
+        ssh_handler.execute(copy_listener_ora, timeout=INSTALLATION_TIMEOUT)
 
         cmd = self.data_base_management.install_database_phase1()
-        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, ignore_errors=True)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
 
     def install_database_phase2(self, ssh_handlers):
         cmd = self.data_base_management.install_database_phase2()
