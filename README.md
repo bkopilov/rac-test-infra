@@ -33,18 +33,20 @@ Run test:
 make test 
 
 In order to access to the clusters console from laptop need to :
-
+- Update /etc/hosts on laptop, access to hypervisor public ip
+- Update iptables on hypervisor to redirect access to the conole based on source and port for kubeconfig and web.
 Update /etc/hosts to the hypervisor
-Example:
-10.9.76.8 	api.test-infra-cluster-97a2d146.redhat.com
-10.9.76.8	oauth-openshift.apps.test-infra-cluster-97a2d146.redhat.com
-10.9.76.8	console-openshift-console.apps.test-infra-cluster-97a2d146.redhat.com
+Example: (ips are public address from hypervisor)
+10.9.76.8 	api.test.oracle-rac.openinfra.lab
+10.9.76.8	oauth-openshift.apps.test.oracle-rac.openinfra.lab
+10.9.76.8	console-openshift-console.apps.test.oracle-rac.openinfra.lab
 
 From the Hypervisor need to add nat redirect to the API address on 443:
 Adding source of laptop will prevent issue with access to port 443 for other services
 
-tunnel=x.y.z.v # source
-sudo iptables -t nat -A PREROUTING -s $tunnel   -p tcp --dport 80 -j DNAT --to-destination 192.168.127.100:80
-sudo iptables -t nat -A PREROUTING  -s  $tunnel   -p tcp --dport 443 -j DNAT --to-destination 192.168.127.100:443
+source_address=x.y.z.v # source
+sudo iptables -t nat -A PREROUTING -s $source_address   -p tcp --dport 80 -j DNAT --to-destination 192.168.127.100:80
+sudo iptables -t nat -A PREROUTING  -s  $source_address   -p tcp --dport 443 -j DNAT --to-destination 192.168.127.100:443
+sudo iptables -t nat -A PREROUTING  -s  $source_address   -p tcp --dport 6443 -j DNAT --to-destination 192.168.127.100:6443
 
 ```
