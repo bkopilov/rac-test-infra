@@ -27,6 +27,7 @@ CPU_CORES = 60
 RAM_MEMORY_GIB = 1024 * 60
 DISK_COUNT = 2
 VIRTUALIZATION_BUNDLE = ['odf', 'cnv','lso', 'nmstate']
+APPLY_ACTION_TIMEOUT = 30
 
 
 class TestRacDeployment(BaseTest):
@@ -202,7 +203,7 @@ class TestRacDeployment(BaseTest):
             params = director.j2_params()
             output = generate_builder("NodeNetworkConfigurationPolicy.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
-            time.sleep(5)
+            time.sleep(APPLY_ACTION_TIMEOUT)
 
     def _build_ocpv_network_attachment(self):
         # Add network attachments definitions - contains the bridge name mapped to port, used by virtual machines
@@ -213,7 +214,7 @@ class TestRacDeployment(BaseTest):
             params = director.j2_params()
             output = generate_builder("NetworkAttachmentDefinition.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
-            time.sleep(5)
+            time.sleep(APPLY_ACTION_TIMEOUT)
 
     def _build_ocpv_storage_pvc(self):
         # RAC will run with 3 shared volumes volume names shared-volume1 , shared-volume2, shared-volume3
@@ -226,7 +227,7 @@ class TestRacDeployment(BaseTest):
             params = director.j2_params()
             output = generate_builder("PersistentVolumeClaim.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
-            time.sleep(5)
+            time.sleep(APPLY_ACTION_TIMEOUT)
 
     def _build_ocpv_vms(self):
         """Create 2 VMs inside OCP with 3 nics for rac accessible from hypervisor"""
@@ -248,7 +249,7 @@ class TestRacDeployment(BaseTest):
             params = director.j2_params()
             output = generate_builder("VirtualMachine.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
-            time.sleep(5)
+            time.sleep(APPLY_ACTION_TIMEOUT)
 
     def _build_rac_cluster(self):
         # Created dummy web server on running hypervisr to download binaries
