@@ -1,5 +1,6 @@
 import logging
 from tests.base_test import BaseTest
+from tests.config import global_variables
 
 from api_tests.common.waiters import wait_for_operators_status_ready
 
@@ -134,6 +135,9 @@ class TestRacDeployment(BaseTest):
 
         yield cluster
         # Cleanup phase , remove additional network created when not attached.
+        if not global_variables.test_teardown:
+            return
+
         for clean_network in rac_networks:
             try:
                 logger.info(f"Cleaning up networks {str(clean_network)}")
