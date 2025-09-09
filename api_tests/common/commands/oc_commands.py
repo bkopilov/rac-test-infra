@@ -1,10 +1,14 @@
 import logging
+from retry import retry
 import openshift_client as oc
 
 logger = logging.getLogger(__name__)
 oc_client = oc
+RETRIES = 3
+RETRIES_DELAY = 10
 
 
+@retry(exceptions=RuntimeError, tries=RETRIES, delay=RETRIES_DELAY)
 def oc_select(resource, namespace):
     with oc.project(namespace):
         try:
@@ -13,9 +17,9 @@ def oc_select(resource, namespace):
             return output
         except oc.OpenShiftPythonException as e:
             raise RuntimeError(f"Unable to get object {resource} -> {str(e)}")
-    return None
 
 
+@retry(exceptions=RuntimeError, tries=RETRIES, delay=RETRIES_DELAY)
 def oc_create(str_dict, cmd_args=None, namespace=None):
     # namespace should be detected from yaml.
     with oc.project(namespace):
@@ -25,7 +29,6 @@ def oc_create(str_dict, cmd_args=None, namespace=None):
             return output
         except oc.OpenShiftPythonException as e:
             raise RuntimeError(f"Unable to create object {str_dict}: {str(e)}")
-    return None
 
 
 def oc_node_interfaces_ip():

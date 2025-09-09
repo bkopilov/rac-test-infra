@@ -28,7 +28,7 @@ RAM_MEMORY_GIB = 1024 * 60
 DISK_COUNT = 2
 VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'self-node-remediation', 'lso', 'nmstate', 'kube-descheduler',
                          'node-healthcheck', 'fence-agents-remediation', 'node-maintenance']
-APPLY_ACTION_TIMEOUT = 30
+APPLY_ACTION_TIMEOUT = 10
 
 
 class TestRacDeployment(BaseTest):
@@ -159,6 +159,7 @@ class TestRacDeployment(BaseTest):
                 params = director.j2_params()
                 output = generate_builder("rac_interface.j2", package_path="templates/libvirt", **params)
                 node_obj.attachDeviceFlags(output, attach_flags)
+                time.sleep(APPLY_ACTION_TIMEOUT)
 
     def _install_cluster(self, cluster):
         cluster.generate_and_download_infra_env()
