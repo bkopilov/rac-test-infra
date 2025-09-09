@@ -275,6 +275,7 @@ class TestRacDeployment(BaseTest):
                                    master_disk_count):
         self._install_cluster(cluster_networks)
         wait_for_operators_status_ready()
+        time.sleep(APPLY_ACTION_TIMEOUT)
         self._build_ocpv_network_policy()
         self._build_ocpv_network_attachment()
         self._build_ocpv_storage_pvc()
