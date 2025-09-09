@@ -29,6 +29,7 @@ DISK_COUNT = 2
 VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'self-node-remediation', 'lso', 'nmstate', 'kube-descheduler',
                          'node-healthcheck', 'fence-agents-remediation', 'node-maintenance']
 APPLY_ACTION_TIMEOUT = 10
+APPLY_VM_TIMEOUT = 60 * 5
 
 
 class TestRacDeployment(BaseTest):
@@ -252,6 +253,7 @@ class TestRacDeployment(BaseTest):
             output = generate_builder("VirtualMachine.j2", package_path="templates/ocp", **params)
             oc_create(str_dict=output, namespace="default")
             time.sleep(APPLY_ACTION_TIMEOUT)
+        time.sleep(APPLY_VM_TIMEOUT)
 
     def _build_rac_cluster(self):
         # Created dummy web server on running hypervisr to download binaries
