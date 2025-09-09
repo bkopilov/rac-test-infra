@@ -290,16 +290,14 @@ class TestRacDeployment(BaseTest):
         # allow ssh from running test-infra hypervisor to the RAC nodes
         run_shell_command(cmd="oc create secret generic ssh-key --from-file=ssh-privatekey=/root/.ssh/id_rsa "
                               "--from-file=ssh-publickey=/root/.ssh/id_rsa.pub")
-
         self._build_ocpv_vms()
+        # rac installation on VMs.
+        run_shell_command("cp /dev/null /root/.ssh/known_hosts")
+        self._build_rac_cluster()
         logging.info(f"kubeconfig path:{cluster_networks._config.kubeconfig_path}")
         logging.info(f"cluster api and id: {str(cluster_networks.get_details().api_vips)}")
         logging.info(f"cluster web ui credentials: "
                      f"{str(cluster_networks.api_client.get_cluster_admin_credentials(cluster_networks.id))}")
-        # rac installation on VMs.
-        run_shell_command("cp /dev/null /root/.ssh/known_hosts")
-        self._build_rac_cluster()
-        print("EOF")
 
 
 
