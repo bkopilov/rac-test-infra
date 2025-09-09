@@ -21,15 +21,15 @@ class NodeSshHandler(SshConnection):
         return self._ip
 
     def execute(self, command, timeout=180, ignore_errors=False):
-        logging.info(f'\n-->>{self.ssh_ipv4}|ignore_error={ignore_errors}|->Executing:\n{command}')
+        logging.info(f'\n{self.ssh_ipv4}|>>>\n{command}\n---')
         output = None
         try:
             output = self._execute(command, timeout)
-            logging.info(f'\n<<-- {self.ssh_ipv4}|output:\n {output}\n')
+            logging.info(f'\n{self.ssh_ipv4}|<<<\n{output}\n---')
             return output
         except Exception as e:
             if ignore_errors:
-                logging.info(f'\n<< {self.ssh_ipv4}|output:\n {output}\n<<\n')
+                logging.info(f'\n{self.ssh_ipv4}|<<<\n{output}\n---')
                 return output
             raise e
 
