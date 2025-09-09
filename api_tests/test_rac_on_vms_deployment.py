@@ -269,10 +269,8 @@ class TestRacDeployment(BaseTest):
     @pytest.mark.parametrize("master_vcpu", [CPU_CORES])
     @pytest.mark.parametrize("master_memory", [RAM_MEMORY_GIB])
     @pytest.mark.parametrize("master_disk_count", [DISK_COUNT])
-    @pytest.mark.parametrize("cluster_name", ["test"])
-    @pytest.mark.parametrize("base_dns_domain", ["oracle-rac.openinfra.lab"])
     def test_create_rac_deployment(self, cluster_networks, masters_count, workers_count, master_vcpu, master_memory,
-                                   master_disk_count, cluster_name, base_dns_domain):
+                                   master_disk_count):
         self._install_cluster(cluster_networks)
         self._build_ocpv_network_policy()
         self._build_ocpv_network_attachment()
