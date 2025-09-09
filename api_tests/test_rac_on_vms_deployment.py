@@ -1,6 +1,8 @@
 import logging
 from tests.base_test import BaseTest
 
+from api_tests.common.waiters import wait_for_operators_status_ready
+
 from api_tests.common.libivrt_network import RacNetworkBuilder, RacNetwork
 from api_tests.common.ocp_network import NodeNetworkConfigurationPolicy, NetworkAttachmentDefinition
 from api_tests.common.ocp_network import NetworkAttachmentDefinitionBuilder, NodeNetworkConfigurationPolicyBuilder
@@ -8,11 +10,10 @@ from api_tests.common.ocp_storage import PersistentVolumeClaimBuilder, Persisten
 from api_tests.common.ocp_virtual_machine import VirtualMachineBuilder, VirtualMachine
 from api_tests.common.builder_template import generate_builder, TemplateDirector
 from api_tests.common.libivrt_network import RacInterfaceBuilder, RacInterface
-from api_tests.common.commands.oc_commands import oc_select, oc_create, oc_node_interfaces_ip
+from api_tests.common.commands.oc_commands import oc_create, oc_node_interfaces_ip
 from api_tests.common.commands.shell_commands import run_shell_command
 from api_tests.common.commands.node_commands import NodeSshHandler
 from api_tests.common.oracle21c_rac.rac_builder import Builder21cRac, RacDirector
-
 from api_tests.common.utils import generate_mac
 from netaddr import IPNetwork
 
@@ -272,6 +273,7 @@ class TestRacDeployment(BaseTest):
     def test_create_rac_deployment(self, cluster_networks, masters_count, workers_count, master_vcpu, master_memory,
                                    master_disk_count):
         self._install_cluster(cluster_networks)
+        wait_for_operators_status_ready()
         self._build_ocpv_network_policy()
         self._build_ocpv_network_attachment()
         self._build_ocpv_storage_pvc()
