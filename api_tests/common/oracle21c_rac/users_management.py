@@ -28,6 +28,12 @@ class UsersManagement21cRac(UsersManagement):
         """
 
     @classmethod
+    def allow_ssh_password(cls):
+        return """
+        sudo bash -c "sed -i -e 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config"
+        """
+
+    @classmethod
     def get_public_key(cls):
         return """
         echo "12345678" | su - oracle bash -c "cat /home/oracle/.ssh/id_rsa.pub"

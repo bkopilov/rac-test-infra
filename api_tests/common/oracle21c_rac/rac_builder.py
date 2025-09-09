@@ -39,6 +39,7 @@ class Builder21cRac(RacBuilder):
     def create_users(self, ssh_handlers):
         groups_cmd = self.user_management.create_users_group()
         ssh_keys_cmd = self.user_management.create_ssh_keys()
+        allow_ssh_passwd = self.user_management.allow_ssh_password()
         directories_cmd = self.user_management.create_directories()
         enable_tsc = self.user_management.set_tsc_clock_source()
         services_cmd = self.user_management.enable_services()
@@ -48,6 +49,7 @@ class Builder21cRac(RacBuilder):
             ssh_handler.execute(directories_cmd)
             ssh_handler.execute(enable_tsc)
             ssh_handler.execute(services_cmd)
+            ssh_handler.execute(allow_ssh_passwd)
 
     def create_swap(self, ssh_handlers):
         swap_cmd = self.user_management.create_swap()
