@@ -26,7 +26,8 @@ logger = logging.getLogger(__name__)
 CPU_CORES = 60
 RAM_MEMORY_GIB = 1024 * 60
 DISK_COUNT = 2
-VIRTUALIZATION_BUNDLE = ['odf', 'cnv','lso', 'nmstate']
+VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'self-node-remediation', 'lso', 'nmstate', 'kube-descheduler',
+-                         'node-healthcheck', 'fence-agents-remediation', 'node-maintenance']
 APPLY_ACTION_TIMEOUT = 30
 
 
