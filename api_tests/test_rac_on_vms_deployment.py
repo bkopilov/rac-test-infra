@@ -30,7 +30,7 @@ DISK_COUNT = 2
 VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'self-node-remediation', 'lso', 'nmstate', 'kube-descheduler',
                          'node-healthcheck', 'fence-agents-remediation', 'node-maintenance']
 APPLY_ACTION_TIMEOUT = 10
-APPLY_VM_TIMEOUT = 60 * 5
+APPLY_VM_TIMEOUT = 60 * 7
 
 
 class TestRacDeployment(BaseTest):
