@@ -27,10 +27,9 @@ logger = logging.getLogger(__name__)
 CPU_CORES = 60
 RAM_MEMORY_GIB = 1024 * 60
 DISK_COUNT = 2
-VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'self-node-remediation', 'lso', 'nmstate', 'kube-descheduler',
-                         'node-healthcheck', 'fence-agents-remediation', 'node-maintenance']
-APPLY_ACTION_TIMEOUT = 30
-APPLY_VM_TIMEOUT = 60 * 5
+VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'lso', 'nmstate']
+APPLY_ACTION_TIMEOUT = 10
+APPLY_VM_TIMEOUT = 60 * 3
 
 
 class TestRacDeployment(BaseTest):
