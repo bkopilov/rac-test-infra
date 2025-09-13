@@ -36,7 +36,7 @@ def oc_node_interfaces_ip():
     example: [{"name": "eth1", "ipv4": "10.1.1.1/24"},}]
     """
     interfaces_obj = oc_select("nns", "default")
-    logger.info(f"interfaces_obj info: {interfaces_obj}")
+    logger.info(f"interfaces_obj info: {interfaces_obj.__dict__}")
     interfaces = interfaces_obj[0].as_dict()['status']['currentState']['interfaces']
     interfaces_list = []
     for interface in interfaces:
