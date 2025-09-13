@@ -6,6 +6,8 @@ from assisted_test_infra.test_infra.controllers.node_controllers.ssh import SshC
 
 import paramiko
 
+from datetime import datetime
+
 logger = logging.getLogger(__name__)
 
 

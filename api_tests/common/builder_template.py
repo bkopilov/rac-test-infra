@@ -53,6 +53,6 @@ def generate_builder(template_name, package_path,  **kwargs) -> str:
     env = Environment(loader=PackageLoader("api_tests", package_path=package_path))
     template = env.get_template(template_name)
     template_format = template.render(**kwargs)
-    logger.debug(f"Creating the '{template_format}'")
+    logger.info(f"Creating the '{template_format}'")
     return template_format
 

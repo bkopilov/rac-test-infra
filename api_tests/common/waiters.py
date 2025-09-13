@@ -3,10 +3,6 @@ import logging
 import openshift_client as oc
 import waiting
 
-logging.basicConfig(
-    level=logging.DEBUG,  # Set the logging level to DEBUG
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
 logger = logging.getLogger(__name__)
 
 OPERATORS_TIMEOUT = 720
@@ -52,7 +48,7 @@ def _are_operators_available(**conditions_kwargs):
         return False
 
 def wait_for_operators_status_ready():
-    logger.debug("Checking if All operators are Ready")
+    logger.info("Checking if All operators are Ready")
     waiting.wait(
         lambda: _are_operators_available(status="True", type="Available"),
         timeout_seconds=OPERATORS_TIMEOUT,
