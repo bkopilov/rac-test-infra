@@ -42,14 +42,14 @@ class NodeSshHandler(SshConnection):
         error = stderr.read()
         status = stdout.channel.recv_exit_status()
 
-        output = output.decode('utf-8')
+        output_decode = output.decode('utf-8')
         if status != 0:
             e = RuntimeError(
-                f"Failed executing, status '{status}', output was:\n{output} stderr \n{error.decode('utf-8')}"
+                f"Failed executing, status '{status}', output was:\n{output} stderr \n{error}"
             )
             e.output = output
             raise e
-        return output
+        return output_decode
 
     def upload_file(self, local_source_path, remote_target_path):
         super().upload_file(local_source_path, remote_target_path)
