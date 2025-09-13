@@ -24,8 +24,8 @@ import pytest
 import time
 logger = logging.getLogger(__name__)
 
-CPU_CORES = 60
-RAM_MEMORY_GIB = 1024 * 60
+CPU_CORES = 40
+RAM_MEMORY_GIB = 1024 * 40
 DISK_COUNT = 2
 VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'lso', 'nmstate']
 APPLY_ACTION_TIMEOUT = 10
