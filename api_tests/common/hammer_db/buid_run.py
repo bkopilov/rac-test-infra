@@ -13,7 +13,7 @@ export ORACLE_INSTANCE=oralab
 ORACLE_HOME=/usr/lib/oracle/21/client64
 
 #small profile
-export ORA_NUM_VU=2
+export ORA_NUM_VU=1
 export ORA_COUNT_WARE=1
 export ORA_RAMPUP=2
 export ORA_DURATION=2
