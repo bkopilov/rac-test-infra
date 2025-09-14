@@ -2,7 +2,8 @@ import logging
 from tests.base_test import BaseTest
 from tests.config import global_variables
 
-from api_tests.common.waiters import wait_for_operators_status_ready
+from api_tests.common.waiters import (wait_for_operators_status_ready,
+                                      wait_for_cnv_status_available, wait_for_odf_status_ready)
 
 from api_tests.common.libivrt_network import RacNetworkBuilder, RacNetwork
 from api_tests.common.ocp_network import NodeNetworkConfigurationPolicy, NetworkAttachmentDefinition
@@ -281,6 +282,8 @@ class TestRacDeployment(BaseTest):
                                    master_disk_count):
         self._install_cluster(cluster_networks)
         wait_for_operators_status_ready()
+        wait_for_cnv_status_available()
+        wait_for_odf_status_ready()
         time.sleep(APPLY_ACTION_TIMEOUT)
         self._build_ocpv_network_policy()
         self._build_ocpv_network_attachment()

@@ -55,3 +55,59 @@ def wait_for_operators_status_ready():
         sleep_seconds=OPERATORS_RETRY,
         waiting_for="All operators cluster to be Ready",
     )
+
+def _is_cnv_available():
+    """Waiting for CNV to be available post cluster installation.
+    Before calling to waiter make sure self.update_oc_config(cluster.nodes, new_cluster) called.
+    :return:
+    """
+    with oc.project("openshift-cnv"):
+        try:
+            cnv_obj = oc.selector("hyperconverged").object()
+            for condition in cnv_obj.model.status.conditions:
+                if condition["type"] == "Available":
+                    if condition["status"] == "True":
+                        logger.debug(
+                            f'CNV status condition -> "Available": {condition["status"]}'
+                        )
+                        return True
+                    else:
+                        logger.debug(
+                            f'CNV status condition -> "Available": not match {condition["status"]}'
+                        )
+                        return False
+        except oc.OpenShiftPythonException as e:
+            logger.debug(f"Unable to read object {str(e)}")
+        return False
+
+def _is_odf_in_status(status="Ready"):
+    with oc.project("openshift-storage"):
+        try:
+            odf_obj = oc.selector("storagecluster").object()
+            logger.debug(f"Is ODF in status {status}: {odf_obj.model.status.phase}")
+            if odf_obj.model.status.phase == "Error":
+                logger.debug(f"ODF status on Error: {str(odf_obj.model.status)}")
+            return odf_obj.model.status.phase == status
+        except oc.OpenShiftPythonException as e:
+            logging.info(
+                f"Got an exception while trying to get storagecluster status. Error: {str(e)}"
+            )
+        return False
+
+def wait_for_cnv_status_available():
+    logger.debug("Checking if CNV is Available")
+    waiting.wait(
+        lambda: _is_cnv_available(),
+        timeout_seconds=OPERATORS_TIMEOUT,
+        sleep_seconds=OPERATORS_RETRY,
+        waiting_for="CNV cluster to be Available",
+    )
+
+def wait_for_odf_status_ready():
+    logger.debug("Checking if ODF is Ready")
+    waiting.wait(
+        lambda: _is_odf_in_status(),
+        timeout_seconds=OPERATORS_TIMEOUT,
+        sleep_seconds=OPERATORS_RETRY,
+        waiting_for="ODF cluster to be Ready",
+    )
