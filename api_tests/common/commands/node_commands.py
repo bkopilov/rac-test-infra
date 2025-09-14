@@ -22,16 +22,16 @@ class NodeSshHandler(SshConnection):
     def ssh_ipv4(self):
         return self._ip
 
-    def execute(self, command, timeout=180, ignore_errors=False):
-        logging.info(f'\n{self.ssh_ipv4}|>>>\n{command}\n---')
+    def execute(self, command, timeout=60 * 35, ignore_errors=False):
+        logging.info(f'\n {datetime.now()}|{self.ssh_ipv4}|>>>\n{command}\n---')
         output = None
         try:
             output = self._execute(command, timeout)
-            logging.info(f'\n{self.ssh_ipv4}|<<<\n{output}\n---')
+            logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n---')
             return output
         except Exception as e:
             if ignore_errors:
-                logging.info(f'\n{self.ssh_ipv4}|<<<\n{output}\n---')
+                logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n---')
                 return output
             raise e
 
@@ -47,7 +47,7 @@ class NodeSshHandler(SshConnection):
         output = output.decode('utf-8', errors='ignore')
         if status != 0:
             e = RuntimeError(
-                f"Failed executing, status '{status}', output was:\n{output} stderr \n"
+                f"{datetime.now()}|Failed executing, status '{status}', output was:\n{output} stderr \n"
                 f"{error.decode('utf-8', errors='ignore')}"
             )
             e.output = output

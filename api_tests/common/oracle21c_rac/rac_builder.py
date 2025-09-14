@@ -10,7 +10,7 @@ from .asm_disks import AsmDisks21cRac
 class RacBuilder:
     pass
 
-INSTALLATION_TIMEOUT = 1800
+INSTALLATION_TIMEOUT = 60 * 35
 
 class Builder21cRac(RacBuilder):
     def __init__(self, download_binaries, disks=("sda", "sdb", "sdc")):
