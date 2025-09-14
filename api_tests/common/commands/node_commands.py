@@ -74,7 +74,7 @@ class NodeSshHandler(SshConnection):
 
     def connect(self, timeout=180):
         logging.info("Going to connect to ip %s", self._ip)
-        self.wait_for_tcp_server()
+        self.wait_for_tcp_server(timeout=timeout)
         self._ssh_client = paramiko.SSHClient()
         self._ssh_client.known_hosts = None
         self._ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
