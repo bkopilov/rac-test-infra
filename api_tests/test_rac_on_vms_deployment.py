@@ -2,6 +2,7 @@ import logging
 from tests.base_test import BaseTest
 from tests.config import global_variables
 
+from api_tests.common.hammer_db import hammer_builder
 from api_tests.common.waiters import (wait_for_operators_status_ready,
                                       wait_for_cnv_status_available, wait_for_odf_status_ready)
 
@@ -16,6 +17,7 @@ from api_tests.common.commands.oc_commands import oc_create, oc_node_interfaces_
 from api_tests.common.commands.shell_commands import run_shell_command
 from api_tests.common.commands.node_commands import NodeSshHandler
 from api_tests.common.oracle21c_rac.rac_builder import Builder21cRac, RacDirector
+from api_tests.common.hammer_db.hammer_builder import Hammer5Builder
 from api_tests.common.utils import generate_mac
 from netaddr import IPNetwork
 
@@ -271,6 +273,15 @@ class TestRacDeployment(BaseTest):
         rac_director = RacDirector(rac_builder=rac_builder, ssh_handlers=ssh_handlers)
         rac_director.build()
 
+    def _build_hammer_db(self):
+        hammer_handler = run_shell_command
+        hammerdb = Hammer5Builder(hammer_handler)
+        hammerdb.build_dnf_package()
+        hammerdb.build_etc_hosts()
+        hammerdb.build_tns_names()
+        hammerdb.hammerdbcli_build()
+        hammerdb.hammerdbcli_run()
+
 
     @pytest.mark.rac
     @pytest.mark.parametrize("masters_count", [3])
@@ -295,6 +306,7 @@ class TestRacDeployment(BaseTest):
         # rac installation on VMs.
         run_shell_command("cp /dev/null /root/.ssh/known_hosts")
         self._build_rac_cluster()
+        self._build_hammer_db()
         logging.info(f"kubeconfig path:{cluster_networks._config.kubeconfig_path}")
         logging.info(f"cluster api and id: {str(cluster_networks.get_details().api_vips)}")
         logging.info(f"cluster web ui credentials: "

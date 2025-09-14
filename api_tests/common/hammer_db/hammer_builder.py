@@ -1,0 +1,45 @@
+from api_tests.common.hammer_db.package_installation import PackageInstallHammer5
+from api_tests.common.hammer_db.hosts_file import HostFileSetting
+from api_tests.common.hammer_db.tns_names import TnsNamesOracle
+from api_tests.common.hammer_db.buid_run import BuildRunHammerDB
+
+
+class HammerBuilder:
+    pass
+
+INSTALLATION_TIMEOUT = 60 * 35
+
+class Hammer5Builder(HammerBuilder):
+    def __init__(self, cmd_handler):
+        self.packages = PackageInstallHammer5
+        self.host_file = HostFileSetting
+        self.tns_names = TnsNamesOracle
+        self.build_run = BuildRunHammerDB
+        self.cmd_handler = cmd_handler
+
+    def build_dnf_package(self):
+        remove_folder = self.packages.remove_old_packages()
+        dnf_install = self.packages.package_pre_install()
+        self.cmd_handler(remove_folder, dnf_install)
+        self.cmd_handler(dnf_install)
+
+    def build_etc_hosts(self):
+        hosts_file = self.host_file.set_hosts_file()
+        self.cmd_handler(hosts_file)
+
+    def build_tns_names(self):
+        tns_install = self.tns_names.tns_name_configuration()
+        self.cmd_handler(tns_install)
+
+    def  hammerdbcli_build(self):
+        build_cmd = self.build_run.build_hammerbd()
+        self.cmd_handler(build_cmd)
+
+    def  hammerdbcli_run(self):
+        build_cmd = self.build_run.run_hammerbd()
+        self.cmd_handler(build_cmd)
+
+    def hammerdbcli_drop(self):
+        build_cmd = self.build_run.drop_hammerbd()
+        self.cmd_handler(build_cmd)
+
