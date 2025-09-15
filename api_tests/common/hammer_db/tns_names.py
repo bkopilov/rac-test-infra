@@ -8,7 +8,7 @@ class TnsNamesOracle(TnsNames):
     @classmethod
     def tns_name_configuration(cls):
         return """
-        sudo bash -c "cat > /opt/HammerDB-5.0/tnsnames.ora << EOF
+        bash -c "cat > /opt/HammerDB-5.0/tnsnames.ora << EOF
 ORALAB =
   (DESCRIPTION =
 	(ADDRESS_LIST =

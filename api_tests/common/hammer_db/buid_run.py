@@ -26,20 +26,20 @@ EOF
     @classmethod
     def build_hammerbd(cls):
         """
-        sudo -i source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/hammerdbcli auto build.tcl
+        source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/hammerdbcli auto build.tcl
         :return:
         """
 
     @classmethod
     def run_hammerbd(cls):
         """
-        sudo -i source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/hammerdbcli auto run.tcl
+        source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/hammerdbcli auto run.tcl
         :return:
         """
 
     @classmethod
     def drop_hammerbd(cls):
         return """
-        sudo -i source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/drop_tpcc_user.sh
+        source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/drop_tpcc_user.sh
         """
 
