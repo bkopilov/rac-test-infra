@@ -19,7 +19,7 @@ class GridManagement21cRac(GridManagement):
         :return:
         """
         output = """
-         echo "12345678" | su - oracle bash -c "/u01/app/21.0.0/grid/gridSetup.sh -ignorePrereq -waitforcompletion -silent \
+         echo "12345678" | su - oracle bash -c "/u01/app/21.0.0/grid/gridSetup.sh -debug -ignorePrereq -waitforcompletion -silent \
         -responseFile /u01/app/21.0.0/grid/install/response/gridsetup.rsp \
         INVENTORY_LOCATION=/u01/app/oraInventory \
         oracle.install.option=CRS_CONFIG \
@@ -75,7 +75,7 @@ class GridManagement21cRac(GridManagement):
                :return:
         """
         output = """
-        echo "12345678" | su - oracle bash -c "/u01/app/21.0.0/grid/gridSetup.sh -silent -executeConfigTools \
+        echo "12345678" | su - oracle bash -c "/u01/app/21.0.0/grid/gridSetup.sh -debug -silent -executeConfigTools \
         -responseFile /u01/app/21.0.0/grid/install/response/gridsetup.rsp \
         INVENTORY_LOCATION=/u01/app/oraInventory \
         oracle.install.option=CRS_CONFIG \
