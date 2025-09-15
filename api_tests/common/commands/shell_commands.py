@@ -6,7 +6,6 @@ logger = logging.getLogger(__name__)
 
 
 def run_shell_command(cmd, shell=True):
-    cmd = cmd.split()
     logger.info(f"run_shell_command {cmd}")
     try:
         process = subprocess.run(cmd, shell=shell, stdout=subprocess.PIPE, universal_newlines=True)
