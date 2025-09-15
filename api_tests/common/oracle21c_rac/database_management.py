@@ -34,7 +34,7 @@ class DataBaseManagement21cRac(DataBaseManagement):
     @classmethod
     def install_database_phase1(cls, **params):
         output = """
-        echo "12345678" | su - oracle bash -c "/u01/app/oracle/product/21.0.0.0/dbhome_1/runInstaller -ignorePrereq -waitforcompletion -silent \
+        echo "12345678" | su - oracle bash -c "/u01/app/oracle/product/21.0.0.0/dbhome_1/runInstaller -debug -ignorePrereq -waitforcompletion -silent \
         -responseFile /u01/app/oracle/product/21.0.0.0/dbhome_1/install/response/db_install.rsp \
         oracle.install.option=INSTALL_DB_SWONLY \
         UNIX_GROUP_NAME=oinstall \
