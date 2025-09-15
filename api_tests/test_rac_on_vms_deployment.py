@@ -75,9 +75,9 @@ class TestRacDeployment(BaseTest):
 
     """
     # Creating two VM's each one will have the reserved mac for "permanent" address for each interface
-    RAC_NETWORKS = [{"name": "rac1", "cidr": IPNetwork("192.168.120.0/24"), "macs": [generate_mac(), generate_mac()]},
-                    {"name": "rac2", "cidr": IPNetwork("192.168.121.0/24"), "macs": [generate_mac(), generate_mac()]},
-                    {"name": "rac3", "cidr": IPNetwork("192.168.122.0/24"), "macs": [generate_mac(), generate_mac()]}]
+    RAC_NETWORKS = [{"name": "test-infra-rac1", "cidr": IPNetwork("192.168.120.0/24"), "macs": [generate_mac(), generate_mac()]},
+                    {"name": "test-infra-rac2", "cidr": IPNetwork("192.168.121.0/24"), "macs": [generate_mac(), generate_mac()]},
+                    {"name": "test-infra-rac3", "cidr": IPNetwork("192.168.122.0/24"), "macs": [generate_mac(), generate_mac()]}]
 
     # RAC DNS and DHCP from libvirt configuration external
     RAC_DNS = {"vip1": {"dns": "oralab1-vip", "ip": "192.168.120.201"},
