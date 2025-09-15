@@ -281,6 +281,7 @@ class TestRacDeployment(BaseTest):
         hammerdb.build_tns_names()
         hammerdb.hammerdbcli_build()
         hammerdb.hammerdbcli_run()
+        hammerdb.build_restore_hosts()
 
 
     @pytest.mark.rac
