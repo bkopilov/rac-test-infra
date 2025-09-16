@@ -6,11 +6,14 @@ from .grid_management import GridManagement21cRac
 from .database_management import DataBaseManagement21cRac
 from .asm_disks import AsmDisks21cRac
 
+from retry import retry
 
 class RacBuilder:
     pass
 
 INSTALLATION_TIMEOUT = 60 * 35
+RETRY_TIMES = 1
+RETRY_DELAY = 30
 
 class Builder21cRac(RacBuilder):
     def __init__(self, download_binaries, disks=("sda", "sdb", "sdc")):
@@ -104,6 +107,7 @@ class Builder21cRac(RacBuilder):
         except Exception as e:
             print(e)
 
+    @retry(exceptions=RuntimeError, tries=RETRY_TIMES, delay=RETRY_DELAY)
     def install_grid_phase1(self, ssh_handler, **params):
         cmd = self.grid_management.grid_install_phase1(**params)
         ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
