@@ -119,6 +119,7 @@ class Builder21cRac(RacBuilder):
             ssh_handler.execute(cmd1, timeout=INSTALLATION_TIMEOUT)
             ssh_handler.execute(cmd2, timeout=INSTALLATION_TIMEOUT)
 
+    @retry(exceptions=RuntimeError, tries=RETRY_TIMES, delay=RETRY_DELAY)
     def install_grid_phase3(self, ssh_handler, **params):
         cmd = self.grid_management.grid_install_phase3(**params)
         ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
