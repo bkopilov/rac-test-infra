@@ -25,14 +25,14 @@ EOF
 
     @classmethod
     def build_hammerbd(cls):
-        """
+        return """
         source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/hammerdbcli auto build.tcl
         :return:
         """
 
     @classmethod
     def run_hammerbd(cls):
-        """
+        return """
         source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/hammerdbcli auto run.tcl
         :return:
         """
