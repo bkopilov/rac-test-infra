@@ -42,7 +42,7 @@ class Binaries21cRac(BinariesManagement):
         """
 
     @classmethod
-    def huge_pages(cls, size="512"):
+    def huge_pages(cls, size="256"):
         return f"""
         sudo -i sysctl -w vm.nr_hugepages={size}
         """
