@@ -12,7 +12,7 @@ class RacBuilder:
     pass
 
 INSTALLATION_TIMEOUT = 60 * 35
-RETRY_TIMES = 1
+RETRY_TIMES = 3
 RETRY_DELAY = 30
 
 class Builder21cRac(RacBuilder):
