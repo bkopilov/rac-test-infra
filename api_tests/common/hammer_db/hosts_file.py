@@ -16,18 +16,18 @@ class HostFileSetting(HostFile):
 192.168.120.101  oralab1.oracle-rac.openinfra.lab  oralab1
 192.168.120.102  oralab2.oracle-rac.openinfra.lab  oralab2
 EOF"
-cp /tmp/hosts  /etc/hosts
+sudo -i cp /tmp/hosts  /etc/hosts
 
         """
 
     @classmethod
     def save_hosts_file(cls):
         return """
-        cp /etc/hosts /tmp/hosts.bk
+        sudo -i cp /etc/hosts /tmp/hosts.bk
         """
 
     @classmethod
     def restore_hosts_file(cls):
         return """
-        cp /tmp/hosts.bk /etc/hosts
+        sudo -i cp /tmp/hosts.bk /etc/hosts
         """

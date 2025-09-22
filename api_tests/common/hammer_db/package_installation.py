@@ -29,10 +29,12 @@ else
   echo "hammerdb-5.0-1.el8.x86_64 is not installed."
   dnf install -y https://download.oracle.com/otn_software/linux/instantclient/2118000/oracle-instantclient-sqlplus-21.18.0.0.0-1.el8.x86_64.rpm
 fi
+
+sudo -i chmod 777 -R /opt/HammerDB-5.0/
     """
 
     @classmethod
     def remove_old_packages(cls):
         return """
-        rm -rf /opt/HammerDB-5.0 
+        sudo -i rm -rf /opt/HammerDB-5.0 
         """
