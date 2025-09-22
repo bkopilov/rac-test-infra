@@ -40,3 +40,9 @@ class Binaries21cRac(BinariesManagement):
         return f"""
         sudo -i dnf install -y {cvuqdisk_path}
         """
+
+    @classmethod
+    def huge_pages(cls, size="512"):
+        return f"""
+        sudo -i sysctl -w vm.nr_hugepages={size}
+        """

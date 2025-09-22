@@ -36,7 +36,9 @@ class Builder21cRac(RacBuilder):
 
     def create_packages(self, ssh_handlers):
         pre_install_cmd = self.package_installation.package_pre_install()
+        huge_pages = self.binaries.huge_pages()
         for ssh_handler in ssh_handlers:
+            ssh_handler.execute(huge_pages)
             ssh_handler.execute(pre_install_cmd)
 
     def create_users(self, ssh_handlers):
