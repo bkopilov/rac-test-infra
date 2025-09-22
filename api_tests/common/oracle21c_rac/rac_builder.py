@@ -36,9 +36,7 @@ class Builder21cRac(RacBuilder):
 
     def create_packages(self, ssh_handlers):
         pre_install_cmd = self.package_installation.package_pre_install()
-        huge_pages = self.binaries.huge_pages()
         for ssh_handler in ssh_handlers:
-            ssh_handler.execute(huge_pages)
             ssh_handler.execute(pre_install_cmd)
 
     def create_users(self, ssh_handlers):
@@ -58,6 +56,12 @@ class Builder21cRac(RacBuilder):
         swap_cmd = self.user_management.create_swap()
         for ssh_handler in ssh_handlers:
             ssh_handler.execute(swap_cmd)
+
+    def huge_pages(self, ssh_handlers):
+        huge_pages = self.binaries_management.huge_pages()
+        for ssh_handler in ssh_handlers:
+            ssh_handler.execute(huge_pages)
+
 
     def create_authorized_keys(self, ssh_handlers):
         get_public_cmd = self.user_management.get_public_key()
@@ -191,6 +195,7 @@ class RacDirector:
         self.rac_builder.create_users(self.ssh_handlers)
         self.rac_builder.create_authorized_keys(self.ssh_handlers)
         self.rac_builder.create_ssh_known_hosts(self.ssh_handlers)
+        self.rac_builder.huge_pages(self.ssh_handlers)
         self.rac_builder.download_binaries(self.ssh_handlers[0])
         self.rac_builder.unzip_grid(self.ssh_handlers[0])
         self.rac_builder.install_qdisk(self.ssh_handlers)
