@@ -5,7 +5,7 @@ class BuildRunHammerDB(BuildRun):
     @classmethod
     def env_params(cls):
         return """
-        sudo bash -c "cat > /opt/HammerDB-5.0/env_params << EOF
+        bash -c "cat > /opt/HammerDB-5.0/env_params << EOF
 export TNS_ADMIN=/opt/HammerDB-5.0/
 export ORACLE_SYSTEM_USER=system
 export ORACLE_SYSTEM_PASSWORD=Password1
@@ -26,20 +26,20 @@ EOF
     @classmethod
     def build_hammerbd(cls):
         return """
-        source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/hammerdbcli auto build.tcl
+        bash -c "source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/hammerdbcli auto build.tcl"
         :return:
         """
 
     @classmethod
     def run_hammerbd(cls):
         return """
-        source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/hammerdbcli auto run.tcl
+        bash -c "source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/hammerdbcli auto run.tcl"
         :return:
         """
 
     @classmethod
     def drop_hammerbd(cls):
         return """
-        source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/drop_tpcc_user.sh
+        bash -c "source /opt/HammerDB-5.0/env && /opt/HammerDB-5.0/drop_tpcc_user.sh"
         """
 

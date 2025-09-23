@@ -36,5 +36,5 @@ sudo -i chmod 777 -R /opt/HammerDB-5.0/
     @classmethod
     def remove_old_packages(cls):
         return """
-        sudo -i rm -rf /opt/HammerDB-5.0 
+        bash -c rm -rf /opt/HammerDB-5.0 
         """

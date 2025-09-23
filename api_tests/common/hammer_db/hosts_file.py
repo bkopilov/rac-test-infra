@@ -23,11 +23,11 @@ sudo -i cp /tmp/hosts  /etc/hosts
     @classmethod
     def save_hosts_file(cls):
         return """
-        sudo -i cp /etc/hosts /tmp/hosts.bk
+        bash -c "cp /etc/hosts /tmp/hosts.bk"
         """
 
     @classmethod
     def restore_hosts_file(cls):
         return """
-        sudo -i cp /tmp/hosts.bk /etc/hosts
+        bash -c "cp /tmp/hosts.bk /etc/hosts"
         """
