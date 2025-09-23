@@ -16,7 +16,7 @@ class HostFileSetting(HostFile):
 192.168.120.101  oralab1.oracle-rac.openinfra.lab  oralab1
 192.168.120.102  oralab2.oracle-rac.openinfra.lab  oralab2
 EOF"
-sudo -i cp /tmp/hosts  /etc/hosts
+bash -c "cp /tmp/hosts  /etc/hosts"
 
         """
 
