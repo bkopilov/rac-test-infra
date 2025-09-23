@@ -39,6 +39,8 @@ class Hammer5Builder(HammerBuilder):
 
     def  hammerdbcli_build(self):
         build_cmd = self.build_run.build_hammerbd()
+        env_param = self.build_run.env_params()
+        self.cmd_handler(env_param)
         self.cmd_handler(build_cmd)
 
     def  hammerdbcli_run(self):

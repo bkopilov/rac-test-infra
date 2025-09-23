@@ -5,7 +5,7 @@ class BuildRunHammerDB(BuildRun):
     @classmethod
     def env_params(cls):
         return """
-        bash -c "cat > /opt/HammerDB-5.0/env_params << EOF
+        bash -c "cat > /opt/HammerDB-5.0/env << EOF
 export TNS_ADMIN=/opt/HammerDB-5.0/
 export ORACLE_SYSTEM_USER=system
 export ORACLE_SYSTEM_PASSWORD=Password1
