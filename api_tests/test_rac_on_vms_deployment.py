@@ -279,14 +279,17 @@ class TestRacDeployment(BaseTest):
         hammerdb.build_dnf_package()
         # copy template files:
         build_content = generate_builder("build.tcl", package_path="templates/hammer_db")
-        run_content = generate_builder("run.tcl", package_path="templates/hammer_db")
-        drop_content = generate_builder("drop_tpcc_user.sh", package_path="templates/hammer_db")
-        profile_content = generate_builder("profile.sh", package_path="templates/hammer_db")
-        hammer_handler(f"""bash -c "cat > /opt/HammerDB-5.0/build.tcl << EOF {build_content} EOF" """)
-        hammer_handler(f"""bash -c "cat > /opt/HammerDB-5.0/run.tcl << EOF {run_content} EOF" """)
-        hammer_handler(f"""bash -c "cat > /opt/HammerDB-5.0/drop_tpcc_user.sh << EOF {drop_content} EOF" """)
-        hammer_handler(f"""bash -c "cat > /opt/HammerDB-5.0/profile.sh << EOF  {profile_content} EOF" """)
+        hammerdb.write_to_file("/opt/HammerDB-5.0/build.tcl", build_content)
 
+        run_content = generate_builder("run.tcl", package_path="templates/hammer_db")
+        hammerdb.write_to_file("/opt/HammerDB-5.0/run.tcl", run_content)
+
+        drop_content = generate_builder("drop_tpcc_user.sh", package_path="templates/hammer_db")
+        hammerdb.write_to_file("/opt/HammerDB-5.0/drop_tpcc_user.sh", drop_content)
+
+        profile_content = generate_builder("profile.sh", package_path="templates/hammer_db")
+        hammerdb.write_to_file("/opt/HammerDB-5.0/profile.sh", profile_content)
+        
         hammerdb.build_etc_hosts()
         hammerdb.build_tns_names()
         hammerdb.hammerdbcli_build()

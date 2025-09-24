@@ -51,3 +51,9 @@ class Hammer5Builder(HammerBuilder):
         build_cmd = self.build_run.drop_hammerbd()
         self.cmd_handler(build_cmd)
 
+    def write_to_file(self, file_path, content):
+        with open(file_path, "a") as file:
+            for c in content.split("\n"):
+                file.write(c + "\n")
+
+
