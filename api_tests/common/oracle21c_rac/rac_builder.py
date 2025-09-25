@@ -128,7 +128,7 @@ class Builder21cRac(RacBuilder):
     #@retry(exceptions=RuntimeError, tries=RETRY_TIMES, delay=RETRY_DELAY)
     def install_grid_phase3(self, ssh_handler, **params):
         cmd = self.grid_management.grid_install_phase3(**params)
-        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, ignore_errors=True)
 
     def create_database_groups(self, ssh_handler):
         cmd_data = self.data_base_management.create_data_disk_group()
