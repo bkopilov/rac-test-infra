@@ -1,7 +1,7 @@
 puts "Starting Oracle TPCC benchmark run..."
 
 # Oracle environment variables
-set env(ORACLE_HOME) "/usr/lib/oracle/19.26/client64"
+set env(ORACLE_HOME) "/usr/lib/oracle/21/client64"
 set env(LD_LIBRARY_PATH) "$env(ORACLE_HOME)/lib"
 
 # Wait for all Virtual Users to finish
