@@ -63,6 +63,8 @@ EOF"
 
 sudo systemctl stop chronyd
 sudo systemctl start chronyd
+sudo sleep 3
+sudo chronyc -a makestep
 
         """
 
