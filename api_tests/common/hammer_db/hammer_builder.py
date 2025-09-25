@@ -56,6 +56,6 @@ class Hammer5Builder(HammerBuilder):
             for c in content.split("\n"):
                 file.write(c + "\n")
 
-        self.cmd_handler(f"""bash -c "chmod 777 {file_path}""")
+        self.cmd_handler(f"""bash -c "chmod 777 {file_path}" """)
 
 
