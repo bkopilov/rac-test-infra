@@ -8,7 +8,7 @@ class PackageInstallation21cRac(PackageInstallation):
     @classmethod
     def package_pre_install(cls):
         return """
-sudo curl -k -L https://download.eng.bos.redhat.com/released/rhel-8/RHEL-8/8.10.0/BaseOS/x86_64/os/Packages/\
+sudo curl -k -L https://download.eng.rdu2.redhat.com/released/rhel-8/RHEL-8/8.10.0/BaseOS/x86_64/os/Packages/\
 glibc-2.28-251.el8.x86_64.rpm -o /tmp/glibc-2.28-251.el8.x86_64.rpm
 sudo -i dnf install -y  /tmp/glibc-2.28-251.el8.x86_64.rpm
 

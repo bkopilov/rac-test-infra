@@ -7,7 +7,7 @@ class RepoCreation:
 class RepoCreation21cRac(RepoCreation):
 
     @classmethod
-    def create_repo(cls, base_url="https://download.eng.bos.redhat.com/released/rhel-8/RHEL-8/", version="8.10.0"):
+    def create_repo(cls, base_url="https://download.eng.rdu2.redhat.com/released/rhel-8/RHEL-8/", version="8.10.0"):
         return f'''sudo bash -c "cat > /tmp/rhel-{version}.repo << EOF
 [rhosp-{version}-baseos]
 name={version} baseos
