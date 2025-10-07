@@ -25,5 +25,5 @@ sudo -i dnf install -y /tmp/oracle-database-preinstall-21c-1.0-1.el8.x86_64.rpm
     @classmethod
     def create_tmp_exec(cls):
         return """
-        sudo mount -t tmpfs -o exec tmpfs /tmp
+        sudo mount -t tmpfs -o exec,rw tmpfs /tmp
         """
