@@ -11,7 +11,8 @@ from retry import retry
 class RacBuilder:
     pass
 
-INSTALLATION_TIMEOUT = 60 * 35
+INSTALLATION_TIMEOUT = 60 * 40
+POST_COMMAND_WAIT = 30
 RETRY_TIMES = 3
 RETRY_DELAY = 30
 
@@ -109,32 +110,32 @@ class Builder21cRac(RacBuilder):
     def install_grid_perinstall(self, ssh_handler):
         cmd = self.grid_management.validate_grid_preinstall()
         try:
-            ssh_handler.execute(cmd)
+            ssh_handler.execute(cmd, post_command_wait=POST_COMMAND_WAIT)
         except Exception as e:
             print(e)
 
     #@retry(exceptions=RuntimeError, tries=RETRY_TIMES, delay=RETRY_DELAY)
     def install_grid_phase1(self, ssh_handler, **params):
         cmd = self.grid_management.grid_install_phase1(**params)
-        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_COMMAND_WAIT)
 
     def install_grid_phase2(self, ssh_handlers):
         cmd1 = self.grid_management.grid_install_phase2_1()
         cmd2 = self.grid_management.grid_install_phase2_2()
         for ssh_handler in ssh_handlers:
-            ssh_handler.execute(cmd1, timeout=INSTALLATION_TIMEOUT)
-            ssh_handler.execute(cmd2, timeout=INSTALLATION_TIMEOUT)
+            ssh_handler.execute(cmd1, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_COMMAND_WAIT)
+            ssh_handler.execute(cmd2, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_COMMAND_WAIT)
 
     #@retry(exceptions=RuntimeError, tries=RETRY_TIMES, delay=RETRY_DELAY)
     def install_grid_phase3(self, ssh_handler, **params):
         cmd = self.grid_management.grid_install_phase3(**params)
-        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_COMMAND_WAIT)
 
     def create_database_groups(self, ssh_handler):
         cmd_data = self.data_base_management.create_data_disk_group()
         cmd_recovery = self.data_base_management.create_recovery_disk_group()
-        ssh_handler.execute(cmd_data, timeout=INSTALLATION_TIMEOUT)
-        ssh_handler.execute(cmd_recovery, timeout=INSTALLATION_TIMEOUT)
+        ssh_handler.execute(cmd_data, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_COMMAND_WAIT)
+        ssh_handler.execute(cmd_recovery, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_COMMAND_WAIT)
 
     def verify_grid_status(self, ssh_handler):
         cmd_grid = self.grid_management.grid_crsctl_stat()
@@ -165,23 +166,23 @@ class Builder21cRac(RacBuilder):
     def sync_disk(self, ssh_handlers):
         cmd = self.asm_disks.sync_disks()
         for ssh_handler in ssh_handlers:
-            ssh_handler.execute(cmd)
+            ssh_handler.execute(cmd, post_command_wait=POST_COMMAND_WAIT)
 
     def install_database_phase1(self, ssh_handler):
         # copy_listener_ora = self.data_base_management.copy_listener_ora()
         # ssh_handler.execute(copy_listener_ora, timeout=INSTALLATION_TIMEOUT)
 
         cmd = self.data_base_management.install_database_phase1()
-        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_COMMAND_WAIT)
 
     def install_database_phase2(self, ssh_handlers):
         cmd = self.data_base_management.install_database_phase2()
         for ssh_handler in ssh_handlers:
-            ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+            ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_COMMAND_WAIT)
 
     def install_database_phase3(self, ssh_handler):
         cmd = self.data_base_management.install_database_phase3()
-        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_COMMAND_WAIT)
 
 
 class RacDirector:
