@@ -297,7 +297,7 @@ class TestRacDeployment(BaseTest):
         logging.info(f"TPM average:{tpm_average}")
         hammerdb.build_restore_hosts()
         assert tpm_average > hammerdb.TPM_AVERAGE, (f"TPM average should be greater than hammer DB"
-                                                    f" {hammerdb.TPM_AVERAGE}")
+                                                    f" {hammerdb.TPM_AVERAGE} but average was {tpm_average}")
 
 
     @pytest.mark.rac

@@ -25,7 +25,7 @@ class HammerParserResult:
 
 class Hammer5Builder(HammerBuilder):
 
-    TPM_AVERAGE = 700
+    TPM_AVERAGE = 450
 
     def __init__(self, cmd_handler):
         self.packages = PackageInstallHammer5
