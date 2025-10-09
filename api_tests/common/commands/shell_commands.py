@@ -12,7 +12,7 @@ def run_shell_command(cmd, shell=True):
     try:
         process = subprocess.run(cmd, shell=shell, stdout=subprocess.PIPE, universal_newlines=True)
         output = process.stdout.strip()
-        logging.info(f'\n {datetime.now()}|>>>\n{output}\n---')
+        logging.info(f'\n {datetime.now()}|<<<\n{output}\n---\n')
         return output
     except subprocess.CalledProcessError as e:
         logger.error(e)

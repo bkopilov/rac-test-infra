@@ -28,11 +28,11 @@ class NodeSshHandler(SshConnection):
         try:
             output = self._execute(command, timeout)
             time.sleep(post_command_wait)
-            logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n---')
+            logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n---\n')
             return output
         except Exception as e:
             if ignore_errors:
-                logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n---')
+                logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n---\n')
                 return output
             raise e
 
