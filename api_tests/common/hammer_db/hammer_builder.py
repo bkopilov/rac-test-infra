@@ -9,7 +9,24 @@ class HammerBuilder:
 
 INSTALLATION_TIMEOUT = 60 * 35
 
+class HammerParserResult:
+
+    @classmethod
+    def parse_tpm_average(cls, res_string):
+        if not res_string:
+            return -1
+        else:
+            # Expecting for '948 Oracle tpm' messages
+            res_numbers = [int(b.split()[0]) for b in res_string.splitlines() if "Oracle tpm" in b]
+            return sum(res_numbers) / len(res_numbers)
+
+
+
+
 class Hammer5Builder(HammerBuilder):
+
+    TPM_AVERAGE = 700
+
     def __init__(self, cmd_handler):
         self.packages = PackageInstallHammer5
         self.host_file = HostFileSetting
@@ -45,7 +62,8 @@ class Hammer5Builder(HammerBuilder):
 
     def  hammerdbcli_run(self):
         build_cmd = self.build_run.run_hammerbd()
-        self.cmd_handler(build_cmd)
+        output = self.cmd_handler(build_cmd)
+        return HammerParserResult.parse_tpm_average(output)
 
     def hammerdbcli_drop(self):
         build_cmd = self.build_run.drop_hammerbd()
@@ -57,5 +75,3 @@ class Hammer5Builder(HammerBuilder):
                 file.write(c + "\n")
 
         self.cmd_handler(f"""bash -c "chmod 777 {file_path}" """)
-
-

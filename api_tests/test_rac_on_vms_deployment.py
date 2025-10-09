@@ -293,8 +293,11 @@ class TestRacDeployment(BaseTest):
         hammerdb.build_etc_hosts()
         hammerdb.build_tns_names()
         hammerdb.hammerdbcli_build()
-        hammerdb.hammerdbcli_run()
+        tpm_average = hammerdb.hammerdbcli_run()
+        logging.info(f"TPM average:{tpm_average}")
         hammerdb.build_restore_hosts()
+        assert tpm_average > hammerdb.TPM_AVERAGE, (f"TPM average should be greater than hammer DB"
+                                                    f" {hammerdb.TPM_AVERAGE}")
 
 
     @pytest.mark.rac
