@@ -5,29 +5,23 @@ class HostFile:
 class HostFileSetting(HostFile):
 
     @classmethod
-    def set_hosts_file(cls):
+    def set_resolv_file(cls):
         return """
-        bash -c "cat > /tmp/hosts <<EOF
-192.168.120.69  oralab-scan.oracle-rac.openinfra.lab  oralab-scan
-192.168.120.70  oralab-scan.oracle-rac.openinfra.lab  oralab-scan
-192.168.120.71  oralab-scan.oracle-rac.openinfra.lab  oralab-scan
-192.168.120.201  oralab1-vip.oracle-rac.openinfra.lab  oralab1-vip
-192.168.120.202  oralab2-vip.oracle-rac.openinfra.lab  oralab2-vip
-192.168.120.101  oralab1.oracle-rac.openinfra.lab  oralab1
-192.168.120.102  oralab2.oracle-rac.openinfra.lab  oralab2
+        bash -c "cat > /tmp/resolv.conf <<EOF
+        nameserver 192.168.120.1
 EOF"
-bash -c "cp /tmp/hosts  /etc/hosts"
+bash -c "cp /tmp/resolv.conf  /etc/resolv.conf"
 
         """
 
     @classmethod
-    def save_hosts_file(cls):
+    def save_resolv_file(cls):
         return """
-        bash -c "cp /etc/hosts /tmp/hosts.bk"
+        bash -c "/usr/bin/cp /etc/resolv.conf /tmp/resolv.conf.bk"
         """
 
     @classmethod
-    def restore_hosts_file(cls):
+    def restore_resolv_file(cls):
         return """
-        bash -c "cp /tmp/hosts.bk /etc/hosts"
+        bash -c "cp /tmp/resolv.conf.bk /etc/resolv.conf"
         """

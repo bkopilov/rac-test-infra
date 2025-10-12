@@ -41,13 +41,13 @@ class Hammer5Builder(HammerBuilder):
         self.cmd_handler(dnf_install)
 
     def build_etc_hosts(self):
-        save_host = self.host_file.save_hosts_file()
-        hosts_file = self.host_file.set_hosts_file()
+        save_host = self.host_file.save_resolv_file()
+        hosts_file = self.host_file.set_resolv_file()
         self.cmd_handler(save_host)
         self.cmd_handler(hosts_file)
 
     def build_restore_hosts(self):
-        restore_host = self.host_file.restore_hosts_file()
+        restore_host = self.host_file.restore_resolv_file()
         self.cmd_handler(restore_host)
 
     def build_tns_names(self):
