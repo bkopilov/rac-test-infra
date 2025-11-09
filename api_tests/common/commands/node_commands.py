@@ -23,16 +23,16 @@ class NodeSshHandler(SshConnection):
         return self._ip
 
     def execute(self, command, timeout=60 * 35, ignore_errors=False, post_command_wait=0):
-        logging.info(f'\n {datetime.now()}|{self.ssh_ipv4}|>>>\n{command}\n---')
+        logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|>>>\n{command}\n')
         output = None
         try:
             output = self._execute(command, timeout)
             time.sleep(post_command_wait)
-            logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n---\n')
+            logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n')
             return output
         except Exception as e:
             if ignore_errors:
-                logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n---\n')
+                logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n')
                 return output
             raise e
 

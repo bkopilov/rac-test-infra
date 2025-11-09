@@ -27,7 +27,7 @@ import pytest
 import time
 logger = logging.getLogger(__name__)
 
-CPU_CORES = 70
+CPU_CORES = 32
 RAM_MEMORY_GIB = 1024 * 70
 DISK_COUNT = 2
 VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'lso', 'nmstate']
