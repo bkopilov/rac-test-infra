@@ -79,6 +79,11 @@ class Builder21cRac(RacBuilder):
         ssh_handlers[0].execute(cmd_strict_check)
         ssh_handlers[1].execute(cmd_strict_check)
 
+    def create_no_zero_conf(self, ssh_handlers):
+        cmd = self.user_management.no_zero_conf()
+        ssh_handlers[0].execute(cmd)
+        ssh_handlers[1].execute(cmd)
+
     def create_ssh_known_hosts(self, ssh_handlers):
         key_scan1_cmd = self.user_management.ssh_key_scans(ssh_handlers[0].ssh_ipv4, ssh_handlers[0].hostname)
         key_scan2_cmd = self.user_management.ssh_key_scans(ssh_handlers[1].ssh_ipv4, ssh_handlers[1].hostname)
@@ -196,6 +201,7 @@ class RacDirector:
         self.rac_builder.create_packages(self.ssh_handlers)
         self.rac_builder.create_users(self.ssh_handlers)
         self.rac_builder.create_authorized_keys(self.ssh_handlers)
+        self.rac_builder.create_no_zero_conf(self.ssh_handlers)
         self.rac_builder.create_ssh_known_hosts(self.ssh_handlers)
         self.rac_builder.huge_pages(self.ssh_handlers)
         self.rac_builder.download_binaries(self.ssh_handlers[0])

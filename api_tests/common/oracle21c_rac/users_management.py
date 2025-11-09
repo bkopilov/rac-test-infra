@@ -105,3 +105,9 @@ EOF"
         return f"""
                 echo "12345678" | su - oracle bash -c "echo -e 'Host *\n StrictHostKeyChecking no'>/home/oracle/.ssh/config"
         """
+
+    @classmethod
+    def no_zero_conf(cls):
+        return f"""
+         sudo -i bash -c "echo 'NOZEROCONF=yes' >> /etc/sysconfig/network"
+        """
