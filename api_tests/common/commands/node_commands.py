@@ -26,8 +26,8 @@ class NodeSshHandler(SshConnection):
         logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|>>>\n{command}\n')
         output = None
         try:
-            output = self._execute(command, timeout)
             time.sleep(post_command_wait)
+            output = self._execute(command, timeout)
             logging.info(f'\n{datetime.now()}|{self.ssh_ipv4}|<<<\n{output}\n')
             return output
         except Exception as e:
