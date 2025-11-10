@@ -179,7 +179,7 @@ class Builder21cRac(RacBuilder):
         # ssh_handler.execute(copy_listener_ora, timeout=INSTALLATION_TIMEOUT)
 
         cmd = self.data_base_management.install_database_phase1()
-        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_COMMAND_WAIT)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, ignore_errors=True, post_command_wait=POST_COMMAND_WAIT)
 
     def install_database_phase2(self, ssh_handlers):
         cmd = self.data_base_management.install_database_phase2()
