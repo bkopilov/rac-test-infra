@@ -123,7 +123,7 @@ class Builder21cRac(RacBuilder):
     #@retry(exceptions=RuntimeError, tries=RETRY_TIMES, delay=RETRY_DELAY)
     def install_grid_phase1(self, ssh_handler, **params):
         cmd = self.grid_management.grid_install_phase1(**params)
-        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_GRID_WAIT)
+        ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, ignore_errors=True, post_command_wait=POST_GRID_WAIT)
 
     def install_grid_phase2(self, ssh_handlers):
         cmd1 = self.grid_management.grid_install_phase2_1()
@@ -172,7 +172,7 @@ class Builder21cRac(RacBuilder):
     def sync_disk(self, ssh_handlers):
         cmd = self.asm_disks.sync_disks()
         for ssh_handler in ssh_handlers:
-            ssh_handler.execute(cmd, post_command_wait=POST_COMMAND_WAIT)
+            ssh_handler.execute(cmd, post_command_wait=POST_GRID_WAIT)
 
     def install_database_phase1(self, ssh_handler):
         # copy_listener_ora = self.data_base_management.copy_listener_ora()
