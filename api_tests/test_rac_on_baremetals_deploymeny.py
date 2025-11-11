@@ -9,7 +9,7 @@ from api_tests.common.disks import CleanNodeDisks
 import pytest
 
 import semver
-
+import waiting
 from tests.base_test import BaseTest
 from tests.config import global_variables
 
