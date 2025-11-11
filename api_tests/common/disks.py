@@ -32,10 +32,6 @@ class CleanNodeDisks:
             self.node.run_command(f"{self.lvremove} {lv_dev}")
             self.node.run_command(f"{self.vgremove} {vg_name}")
         except RuntimeError as e:
-
-
-
-
             logger.info(f"Unable to delete lvm - probably already deleted, error: {str(e)}")
 
     def _clean_disk(self, name):

@@ -98,7 +98,7 @@ class TestBaremetalMachines(BaseTest):
         return cmd_out
 
     @staticmethod
-    def _get_vip_ingress(ipv4_address, ingress=100, vip=101):
+    def _get_vip_ingress(ipv4_address, ingress=250, vip=251):
         """Set vip and ingress from machine network, pick unused
 
         Probabaly we get set here function - available_host_for_vip - TBD
