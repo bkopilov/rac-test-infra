@@ -19,6 +19,8 @@ VIRTUALIZATION_BUNDLE = ['nmstate', 'cnv', 'lso', 'odf']
 DISK_INSTALLATION_TYPE="SSD"
 DISK_INSTALLATION_NAME = "nvme0n1" #assume exist on all machines
 
+IDRAC_WAIT = 360
+IDRAC_RETRY = 30
 
 class TestBaremetalMachines(BaseTest):
 
