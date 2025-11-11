@@ -29,6 +29,46 @@ class TestBaremetalMachines(BaseTest):
             CleanNodeDisks(n).clean_disks()
 
     @staticmethod
+    def _is_idrac_state(idrac_node, states):
+        try:
+            hostname = idrac_node.url.split("/")[2]
+            logger.info(f"Is idrac {hostname} status: {states}")
+
+            current_state = idrac_node.info()["BootProgress"]["LastState"]
+            logger.info(
+                f"Is idrac {hostname} status: {states}| current_state: {current_state}"
+            )
+            return current_state in states
+        except Exception as e:
+            logging.info(e)
+            return False
+
+    def _stop_idrac_node(self, redfish_node):
+        redfish_node.stop()
+        waiting.wait(
+            lambda: self._is_idrac_state(
+                redfish_node, ["None", "Node already powered off"]
+            ),
+            timeout_seconds=IDRAC_WAIT,
+            sleep_seconds=IDRAC_RETRY,
+            waiting_for="Stopping IDRAC service",
+        )
+
+    def _start_idrac_node(self, redfish_node):
+        redfish_node.start()
+        waiting.wait(
+            lambda: self._is_idrac_state(redfish_node, ["OSRunning"]),
+            timeout_seconds=IDRAC_WAIT,
+            sleep_seconds=IDRAC_RETRY,
+            waiting_for="Starting IDRAC service",
+        )
+
+    def stop_idrac_guest_nodes(self, redfish_nodes):
+        logger.info("Stop baremetal machines before testing")
+        for redfish_node in redfish_nodes:
+            self._stop_idrac_node(redfish_node.redfish)
+
+    @staticmethod
     def _set_installation_disk(cluster, driver_type=DISK_INSTALLATION_TYPE, disk_name=DISK_INSTALLATION_NAME):
         # Update installation disks to SSD same on all machines
         # Driver type can be iSCSI or Multipath
@@ -126,6 +166,7 @@ class TestBaremetalMachines(BaseTest):
         )
         # Adapter will add support for list disks ,ip's for ssh node based on cluster inventory
         cluster.nodes.controller.set_adapter_controller(cluster)
+        self.stop_idrac_guest_nodes(cluster.nodes.controller.redfish_receivers)
         cluster.nodes.prepare_nodes()
         cluster.wait_until_hosts_are_discovered(allow_insufficient=True)
         self._clean_disks(cluster)
