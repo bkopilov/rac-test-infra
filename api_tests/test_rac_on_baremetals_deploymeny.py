@@ -15,7 +15,7 @@ from tests.config import global_variables
 
 logger = logging.getLogger(__name__)
 
-VIRTUALIZATION_BUNDLE = ['nmstate', 'cnv', 'lso', 'odf']
+VIRTUALIZATION_BUNDLE = ['nmstate', 'cnv', 'lso', 'odf', "lvm"]
 DISK_INSTALLATION_TYPE="SSD"
 DISK_INSTALLATION_NAME = "nvme0n1" #assume exist on all machines
 
