@@ -173,6 +173,7 @@ class TestBaremetalMachines(BaseTest):
         cluster.wait_until_hosts_are_discovered(allow_insufficient=True)
         self._set_bundle_operators(cluster)
         self._set_roles_names(cluster, masters_count)
+        self._clean_disk(cluster)
         self._set_installation_disk(cluster)
         # Get ocp network.
         node_ip = cluster.nodes.controller.get_node_ips_and_macs("master-0")[0][0]
