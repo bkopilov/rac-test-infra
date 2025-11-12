@@ -26,10 +26,10 @@ class TestBaremetalMachines(BaseTest):
 
     @staticmethod
     def _clean_disks(cluster):
-        nodes = cluster.nodes
+        nodes = cluster.nodes.nodes
 
-        for index in range(len(nodes)):
-            CleanNodeDisks(nodes[index]).clean_disks()
+        for node in nodes:
+            CleanNodeDisks(node).clean_disks()
 
     @staticmethod
     def _is_idrac_state(idrac_node, states):
