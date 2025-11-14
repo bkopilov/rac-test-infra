@@ -78,6 +78,9 @@ spec:
               model: virtio
               name: {{interface_name3}}
           rng: {}
+        ioThreads:
+          supplementalPoolThreadCount: 4
+        ioThreadsPolicy: supplementalPool
         machine:
           type: pc-q35-rhel9.4.0
         memory:

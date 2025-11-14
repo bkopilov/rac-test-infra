@@ -18,7 +18,7 @@ RETRY_TIMES = 3
 RETRY_DELAY = 30
 
 class Builder21cRac(RacBuilder):
-    def __init__(self, download_binaries, disks=("sda", "sdb", "sdc")):
+    def __init__(self, download_binaries, disks=("vdc", "vdd", "vde")):
         self.repo_creation = RepoCreation21cRac
         self.package_installation = PackageInstallation21cRac
         self.user_management = UsersManagement21cRac
@@ -159,7 +159,7 @@ class Builder21cRac(RacBuilder):
         for ssh_handler in ssh_handlers:
             disks_asm = []
             for disk in self.disks:
-                disk_id_cmd = self.asm_disks.create_scsi_id(disk)
+                disk_id_cmd = self.asm_disks.disk_id(disk)
                 disk_id = ssh_handler.execute(disk_id_cmd)
                 if disk_id:
                     disks_asm.append(disk_id.strip())

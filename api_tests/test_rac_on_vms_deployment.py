@@ -246,7 +246,7 @@ class TestRacDeployment(BaseTest):
                                      volume1="volume" + str(1),
                                      volume2="volume" + str(2),
                                      volume3="volume" + str(3),
-                                     disk_bus="scsi")
+                                     disk_bus="virtio")
 
             vm_builder.build_network(interface_name1=self.RAC_NETWORKS[0]['name'],
                                      interface_name2=self.RAC_NETWORKS[1]['name'],
