@@ -9,7 +9,8 @@ from api_tests.common.waiters import (wait_for_operators_status_ready,
 from api_tests.common.libivrt_network import RacNetworkBuilder, RacNetwork
 from api_tests.common.ocp_network import NodeNetworkConfigurationPolicy, NetworkAttachmentDefinition
 from api_tests.common.ocp_network import NetworkAttachmentDefinitionBuilder, NodeNetworkConfigurationPolicyBuilder
-from api_tests.common.ocp_storage import PersistentVolumeClaimBuilder, PersistentVolumeClaim
+from api_tests.common.ocp_storage import (PersistentVolumeClaimBuilder, PersistentVolumeClaim, DataVolumeBuilder,
+                                          DataVolume)
 from api_tests.common.ocp_virtual_machine import VirtualMachineBuilder, VirtualMachine
 from api_tests.common.builder_template import generate_builder, TemplateDirector
 from api_tests.common.libivrt_network import RacInterfaceBuilder, RacInterface
@@ -34,6 +35,7 @@ VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'lso', 'nmstate']
 APPLY_ACTION_TIMEOUT = 10
 APPLY_VM_TIMEOUT = 60 * 3
 
+DataVolumeIMage ="myImage"
 
 class TestRacDeployment(BaseTest):
     """Test RAC oracle on OCPv with 2 vms conntected to shared backend.
@@ -238,11 +240,21 @@ class TestRacDeployment(BaseTest):
             oc_create(str_dict=output, namespace="default")
             time.sleep(APPLY_ACTION_TIMEOUT)
 
+    def _build_ocpv_data_volume_image(self):
+        data_volume_builder = DataVolumeBuilder(DataVolume())
+        data_volume_builder.build(data_volume_name=DataVolumeIMage)
+        director = TemplateDirector(template_builder=data_volume_builder)
+        params = director.j2_params()
+        output = generate_builder("DataVolume.j2", package_path="templates/ocp", **params)
+        oc_create(str_dict=output, namespace="openshift-virtualization-os-images")
+        time.sleep(APPLY_VM_TIMEOUT)
+
     def _build_ocpv_vms(self):
         """Create 2 VMs inside OCP with 3 nics for rac accessible from hypervisor"""
         for index in range(2):
             vm_builder = VirtualMachineBuilder(VirtualMachine())
             vm_builder.build_storage(node_name="oralab" + str(index + 1), ssh_key_name="ssh-key",
+                                     data_volume_image=DataVolumeIMage,
                                      volume1="volume" + str(1),
                                      volume2="volume" + str(2),
                                      volume3="volume" + str(3),
@@ -316,6 +328,7 @@ class TestRacDeployment(BaseTest):
         self._build_ocpv_network_policy()
         self._build_ocpv_network_attachment()
         self._build_ocpv_storage_pvc()
+        self._build_ocpv_data_volume_image()
         # allow ssh from running test-infra hypervisor to the RAC nodes
         run_shell_command(cmd="oc create secret generic ssh-key --from-file=ssh-privatekey=/root/.ssh/id_rsa "
                               "--from-file=ssh-publickey=/root/.ssh/id_rsa.pub")

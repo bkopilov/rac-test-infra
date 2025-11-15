@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 class VirtualMachine:
     def __init__(self):
         self.node_name = None
+        self.data_volume_image = None
         self.ssh_key_name = None
         self.volume1 = None
         self.volume2 = None
@@ -22,8 +23,9 @@ class VirtualMachine:
 
 class VirtualMachineBuilder(TemplateBuilder):
     """Update VirtualMachine product params"""
-    def build_storage(self, node_name, ssh_key_name, volume1, volume2, volume3, disk_bus="scsi"):
+    def build_storage(self, node_name, data_volume_image, ssh_key_name, volume1, volume2, volume3, disk_bus="scsi"):
         self.template.node_name = node_name
+        self.template.data_volume_image = data_volume_image
         self.template.ssh_key_name = ssh_key_name
         self.template.volume1 = volume1
         self.template.volume2 = volume2
