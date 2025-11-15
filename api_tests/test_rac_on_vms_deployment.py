@@ -241,20 +241,22 @@ class TestRacDeployment(BaseTest):
             time.sleep(APPLY_ACTION_TIMEOUT)
 
     def _build_ocpv_data_volume_image(self):
-        data_volume_builder = DataVolumeBuilder(DataVolume())
-        data_volume_builder.build(data_volume_name=DataVolumeIMage)
-        director = TemplateDirector(template_builder=data_volume_builder)
-        params = director.j2_params()
-        output = generate_builder("DataVolume.j2", package_path="templates/ocp", **params)
-        oc_create(str_dict=output, namespace="openshift-virtualization-os-images")
-        time.sleep(APPLY_VM_TIMEOUT)
+        # create pvc from datavolume
+        for index in range(2):
+            data_volume_builder = DataVolumeBuilder(DataVolume())
+            data_volume_builder.build(data_volume_name=DataVolumeIMage + str(index))
+            director = TemplateDirector(template_builder=data_volume_builder)
+            params = director.j2_params()
+            output = generate_builder("DataVolume.j2", package_path="templates/ocp", **params)
+            oc_create(str_dict=output, namespace="default")
+            time.sleep(APPLY_VM_TIMEOUT)
 
     def _build_ocpv_vms(self):
         """Create 2 VMs inside OCP with 3 nics for rac accessible from hypervisor"""
         for index in range(2):
             vm_builder = VirtualMachineBuilder(VirtualMachine())
             vm_builder.build_storage(node_name="oralab" + str(index + 1), ssh_key_name="ssh-key",
-                                     data_volume_image=DataVolumeIMage,
+                                     data_volume_image=DataVolumeIMage + str(index),
                                      volume1="volume" + str(1),
                                      volume2="volume" + str(2),
                                      volume3="volume" + str(3),

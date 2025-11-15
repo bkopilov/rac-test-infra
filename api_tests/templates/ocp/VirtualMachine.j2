@@ -4,21 +4,6 @@ metadata:
   name: {{node_name}}
   namespace: default
 spec:
-  dataVolumeTemplates:
-    - apiVersion: cdi.kubevirt.io/v1beta1
-      kind: DataVolume
-      metadata:
-        creationTimestamp: null
-        name: {{node_name}}
-      spec:
-        sourceRef:
-          kind: DataSource
-          name: {{ data_volume_image }}
-          namespace: openshift-virtualization-os-images
-        storage:
-          resources:
-            requests:
-              storage: 50Gi
   runStrategy: RerunOnFailure
   template:
     metadata:
@@ -98,9 +83,9 @@ spec:
           name: {{interface_name3}}
       terminationGracePeriodSeconds: 180
       volumes:
-        - dataVolume:
-            name: {{node_name}}
-          name: rootdisk
+        - name: rootdisk
+          persistentVolumeClaim:
+            claimName: {{data_volume_image}}
         - cloudInitNoCloud:
             userData: |-
               #cloud-config
