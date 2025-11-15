@@ -35,7 +35,7 @@ VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'lso', 'nmstate']
 APPLY_ACTION_TIMEOUT = 10
 APPLY_VM_TIMEOUT = 60 * 3
 
-DataVolumeIMage ="myImage"
+DataVolumeIMage ="myimage"
 
 class TestRacDeployment(BaseTest):
     """Test RAC oracle on OCPv with 2 vms conntected to shared backend.
