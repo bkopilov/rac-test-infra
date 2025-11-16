@@ -53,7 +53,7 @@ class UsersManagement21cRac(UsersManagement):
     def enable_services(cls):
         return """
         sudo bash -c "cat > /etc/chrony.conf << EOF
-server 10.2.32.37 iburst
+server time.google.com iburst
 makestep 1.0 -1
 EOF"
 
