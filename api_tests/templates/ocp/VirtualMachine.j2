@@ -33,21 +33,26 @@ spec:
           disks:
             - disk:
                 bus: virtio
+              serial: rootdisk
               name: rootdisk
             - disk:
                 bus: virtio
+              serial: cloudinitdisk
               name: cloudinitdisk
             - disk:
                 bus: {{disk_bus}}
               name: {{volume1}}
+              serial: {{volume1}}
               shareable: true
             - disk:
                 bus: {{disk_bus}}
               name: {{volume2}}
+              serial: {{volume2}}
               shareable: true
             - disk:
                 bus: {{disk_bus}}
               name: {{volume3}}
+              serial: {{volume3}}
               shareable: true
           interfaces:
             - bridge: {}
