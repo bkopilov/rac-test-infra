@@ -53,8 +53,8 @@ class UsersManagement21cRac(UsersManagement):
     def enable_services(cls):
         return """
         sudo bash -c "cat > /etc/chrony.conf << EOF
-server time.google.com iburst
-makestep 1.0 -1
+server 10.11.160.238 iburst
+makestep 1.0 3
 EOF"
 
 sudo systemctl stop chronyd
