@@ -22,9 +22,9 @@ class AsmDisks21cRac(AsmDisks):
     def create_udev(cls, disk_id1, disk_id2, disk_id3):
         return f"""
         cat > /tmp/99-oracle-asmdevices.rules <<EOF
-KERNEL=="sd?1", SUBSYSTEM=="block", PROGRAM=="/usr/lib/udev/scsi_id -g -u -d /dev/\$parent", RESULT=="{disk_id1}", SYMLINK+="oracleasm/asmdisk1", OWNER="oracle", GROUP="asmadmin", MODE="0660"
-KERNEL=="sd?1", SUBSYSTEM=="block", PROGRAM=="/usr/lib/udev/scsi_id -g -u -d /dev/\$parent", RESULT=="{disk_id2}", SYMLINK+="oracleasm/asmdisk2", OWNER="oracle", GROUP="asmadmin", MODE="0660"
-KERNEL=="sd?1", SUBSYSTEM=="block", PROGRAM=="/usr/lib/udev/scsi_id -g -u -d /dev/\$parent", RESULT=="{disk_id3}", SYMLINK+="oracleasm/asmdisk3", OWNER="oracle", GROUP="asmadmin", MODE="0660"
+KERNEL=="vd?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id1}", SYMLINK+="oracleasm/asmdisk1", OWNER="oracle", GROUP="asmadmin", MODE="0660"
+KERNEL=="vd?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id2}", SYMLINK+="oracleasm/asmdisk2", OWNER="oracle", GROUP="asmadmin", MODE="0660"
+KERNEL=="vd?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id3}", SYMLINK+="oracleasm/asmdisk3", OWNER="oracle", GROUP="asmadmin", MODE="0660"
 EOF
         sudo -i bash -c "cp /tmp/99-oracle-asmdevices.rules /etc/udev/rules.d/99-oracle-asmdevices.rules"
 """
