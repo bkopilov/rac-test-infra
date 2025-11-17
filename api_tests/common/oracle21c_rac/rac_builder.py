@@ -52,7 +52,7 @@ class Builder21cRac(RacBuilder):
             ssh_handler.execute(ssh_keys_cmd)
             ssh_handler.execute(directories_cmd)
             ssh_handler.execute(enable_tsc)
-            ssh_handler.execute(services_cmd)
+            ssh_handler.execute(services_cmd, post_command_wait=POST_GRID_WAIT)
 
     def create_swap(self, ssh_handlers):
         swap_cmd = self.user_management.create_swap()

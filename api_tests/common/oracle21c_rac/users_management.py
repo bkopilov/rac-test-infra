@@ -58,6 +58,7 @@ makestep 1.0 3
 EOF"
 
 sudo systemctl stop chronyd
+sudo rm -f /var/lib/chrony/drift
 sudo sleep 1
 sudo systemctl start chronyd
 sudo sleep 5
