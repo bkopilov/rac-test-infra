@@ -56,9 +56,8 @@ class UsersManagement21cRac(UsersManagement):
 server 10.11.160.238 iburst
 makestep 1.0 3
 EOF"
-
+sudo timedatectl set-ntp false
 sudo systemctl stop chronyd
-sudo rm -f /var/lib/chrony/drift
 sudo sleep 1
 sudo systemctl start chronyd
 sudo sleep 5
