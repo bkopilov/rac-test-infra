@@ -60,9 +60,11 @@ rtcsync
 keyfile /etc/chrony.keys
 leapsectz right/UTC
 EOF"
-sudo systemctl enable chronyd
-sudo systemctl restart chronyd
-sudo sleep 5
+sudo systemctl stop chronyd
+sudo rm -f /var/lib/chrony/drift
+sudo sleep 3
+sudo systemctl start chronyd
+sudo sleep 3
 sudo chronyc -a makestep
 
         """
