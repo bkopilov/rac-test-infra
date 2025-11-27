@@ -70,10 +70,10 @@ sudo chronyc -a makestep
         """
 
     @classmethod
-    def set_tsc_clock_source(cls):
+    def set_clock_source(cls):
         return """
         sudo bash -c "cat > /sys/devices/system/clocksource/clocksource0/current_clocksource << EOF
-tsc
+kvm-clock
 EOF"
 
         """

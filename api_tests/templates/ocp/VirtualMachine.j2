@@ -25,6 +25,17 @@ spec:
                 secretName: {{ssh_key_name}}
       architecture: amd64
       domain:
+        clock:
+          utc: {}
+          timer:
+            hyperv:
+              present: false
+            hpet:
+              present: false
+            pit:
+              present: false
+            rtc:
+              tickPolicy: catchup
         cpu:
           cores: 1
           sockets: 4
