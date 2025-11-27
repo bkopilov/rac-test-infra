@@ -53,7 +53,7 @@ class UsersManagement21cRac(UsersManagement):
     def enable_services(cls):
         return """
         sudo bash -c "cat > /etc/chrony.conf << EOF
-pool 2.rhel.pool.ntp.org iburst
+server 10.2.32.37 iburst
 driftfile /var/lib/chrony/drift
 makestep 1.0 3
 rtcsync
