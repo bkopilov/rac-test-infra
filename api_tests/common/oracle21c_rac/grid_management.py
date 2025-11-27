@@ -29,7 +29,7 @@ class GridManagement21cRac(GridManagement):
         oracle.install.crs.config.scanType=LOCAL_SCAN \
         oracle.install.crs.config.gpnp.scanName=oralab-scan \
         oracle.install.crs.config.gpnp.scanPort=1521 \
-        oracle.install.crs.config.ClusterConfiguration=STANDARD \
+        oracle.install.crs.config.ClusterConfiguration=STANDALONE \
         oracle.install.crs.config.configureAsExtendedCluster=false \
         oracle.install.crs.config.clusterName=oralab2-cl \
         oracle.install.crs.config.gpnp.configureGNS=false \
@@ -85,7 +85,7 @@ class GridManagement21cRac(GridManagement):
         oracle.install.crs.config.scanType=LOCAL_SCAN \
         oracle.install.crs.config.gpnp.scanName=oralab-scan \
         oracle.install.crs.config.gpnp.scanPort=1521 \
-        oracle.install.crs.config.ClusterConfiguration=STANDARD \
+        oracle.install.crs.config.ClusterConfiguration=STANDALONE \
         oracle.install.crs.config.configureAsExtendedCluster=false \
         oracle.install.crs.config.clusterName=oralab2-cl \
         oracle.install.crs.config.gpnp.configureGNS=false \
