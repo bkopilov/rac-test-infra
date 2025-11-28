@@ -42,7 +42,7 @@ class GridManagement21cRac(GridManagement):
         oracle.install.asm.diskGroup.name=OCR \
         oracle.install.asm.diskGroup.redundancy=EXTERNAL \
         oracle.install.asm.diskGroup.AUSize=4 \
-        oracle.install.asm.diskGroup.disksWithFailureGroupNames=/dev/oracleasm/asmdisk1, \
+        oracle.install.asm.diskGroup.disksWithFailureGroupNames=/dev/oracleasm/asmdisk1 \
         oracle.install.asm.diskGroup.disks=/dev/oracleasm/asmdisk1 \
         oracle.install.asm.diskGroup.diskDiscoveryString=/dev/oracleasm/* \
         oracle.install.asm.monitorPassword=Password1 \
@@ -98,7 +98,7 @@ class GridManagement21cRac(GridManagement):
         oracle.install.asm.diskGroup.name=OCR01 \
         oracle.install.asm.diskGroup.redundancy=EXTERNAL \
         oracle.install.asm.diskGroup.AUSize=4 \
-        oracle.install.asm.diskGroup.disksWithFailureGroupNames=/dev/oracleasm/asmdisk1, \
+        oracle.install.asm.diskGroup.disksWithFailureGroupNames=/dev/oracleasm/asmdisk1 \
         oracle.install.asm.diskGroup.disks=/dev/oracleasm/asmdisk1 \
         oracle.install.asm.diskGroup.diskDiscoveryString=/dev/oracleasm/* \
         oracle.install.asm.monitorPassword=Password1 \
