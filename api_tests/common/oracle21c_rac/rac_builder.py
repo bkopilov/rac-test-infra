@@ -14,8 +14,8 @@ class RacBuilder:
     pass
 
 INSTALLATION_TIMEOUT = 60 * 40
-POST_COMMAND_WAIT = 45
-POST_GRID_WAIT = 30
+POST_COMMAND_WAIT = 15
+POST_GRID_WAIT = 15
 RETRY_TIMES = 3
 RETRY_DELAY = 30
 
@@ -135,7 +135,8 @@ class Builder21cRac(RacBuilder):
         cmd2 = self.grid_management.grid_install_phase2_2()
         for cmd in [cmd1, cmd2]:
             for ssh_handler in ssh_handlers:
-                ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT, post_command_wait=POST_GRID_WAIT)
+                ssh_handler.execute(cmd, timeout=INSTALLATION_TIMEOUT,
+                                    ignore_errors=True, post_command_wait=POST_GRID_WAIT)
 
     #@retry(exceptions=RuntimeError, tries=RETRY_TIMES, delay=RETRY_DELAY)
     def install_grid_phase3(self, ssh_handler, **params):
