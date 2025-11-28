@@ -74,7 +74,7 @@ sudo chronyc -a makestep
     def set_clock_source(cls):
         return """
         sudo bash -c "cat > /sys/devices/system/clocksource/clocksource0/current_clocksource << EOF
-kvm-clock
+tsc
 EOF"
 
         """
