@@ -40,6 +40,8 @@ WEB_SERVER = "http://10.9.76.8:8888"
 # OL8U10_x86_64-kvm-b258.qcow2 or rhel-guest-image-8.10-1362.x86_64.qcow2
 RAC_IMAGE = os.environ.get("RAC_IMAGE", "OL8U10_x86_64-kvm-b258.qcow2")
 DataVolumeIMage ="myimage"
+DISK_BUS_CNV = "virtio"  # support iscsi too
+RAC_DISKS = ("vdc", "vdd", "vde") if DISK_COUNT == "virtio" else ("sdc", "sdd", "sde")
 
 class TestRacDeployment(BaseTest):
     """Test RAC oracle on OCPv with 2 vms conntected to shared backend.
@@ -265,7 +267,7 @@ class TestRacDeployment(BaseTest):
                                      volume1="volume" + str(1),
                                      volume2="volume" + str(2),
                                      volume3="volume" + str(3),
-                                     disk_bus="virtio")
+                                     disk_bus=DISK_BUS_CNV)
 
             vm_builder.build_network(interface_name1=self.RAC_NETWORKS[0]['name'],
                                      interface_name2=self.RAC_NETWORKS[1]['name'],
@@ -281,8 +283,11 @@ class TestRacDeployment(BaseTest):
 
     def _build_rac_cluster(self):
         # Created dummy web server on running hypervisr to download binaries
+        # vdc, vdd , vde when virtio bus
+        # sdb, sdc , sdd when iscsi bus
         rac_builder = Builder21cRac(download_binaries=[f"{WEB_SERVER}/LINUX.X64_213000_grid_home.zip",
-                                                       f"{WEB_SERVER}/LINUX.X64_213000_db_home.zip"])
+                                                       f"{WEB_SERVER}/LINUX.X64_213000_db_home.zip"],
+                                    disks=RAC_DISKS)
         user = "cloud-user"
         private_key = "/root/.ssh/id_rsa"
         ssh_handlers = [NodeSshHandler(ipv4_address=self.RAC_DNS['node1']['ip'], username=user,
