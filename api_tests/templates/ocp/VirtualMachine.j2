@@ -43,11 +43,11 @@ spec:
         devices:
           disks:
             - disk:
-                bus: virtio
+                bus: {{disk_bus}}
               serial: rootdisk
               name: rootdisk
             - disk:
-                bus: virtio
+                bus: {{disk_bus}}
               serial: cloudinitdisk
               name: cloudinitdisk
             - disk:
