@@ -41,7 +41,7 @@ WEB_SERVER = "http://10.9.76.8:8888"
 RAC_IMAGE = os.environ.get("RAC_IMAGE", "OL8U10_x86_64-kvm-b258.qcow2")
 DataVolumeIMage ="myimage"
 DISK_BUS_CNV = "virtio"  # support iscsi too
-RAC_DISKS = ("vdc", "vdd", "vde") if DISK_COUNT == "virtio" else ("sdc", "sdd", "sde")
+RAC_DISKS = ("vdc", "vdd", "vde") if DISK_BUS_CNV == "virtio" else ("sdc", "sdd", "sde")
 
 class TestRacDeployment(BaseTest):
     """Test RAC oracle on OCPv with 2 vms conntected to shared backend.
