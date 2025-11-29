@@ -26,6 +26,7 @@ import copy
 import libvirt
 import pytest
 import time
+import os
 logger = logging.getLogger(__name__)
 
 CPU_CORES = 32
@@ -36,6 +37,8 @@ APPLY_ACTION_TIMEOUT = 10
 APPLY_VM_TIMEOUT = 60 * 3
 # All packages and images are stored in web server
 WEB_SERVER = "http://10.9.76.8:8888"
+# OL8U10_x86_64-kvm-b258.qcow2 or rhel-guest-image-8.10-1362.x86_64.qcow2
+RAC_IMAGE = os.environ.get("RAC_IMAGE", "rhel-guest-image-8.10-1362.x86_64.qcow2")
 DataVolumeIMage ="myimage"
 
 class TestRacDeployment(BaseTest):
@@ -246,7 +249,7 @@ class TestRacDeployment(BaseTest):
         for index in range(2):
             data_volume_builder = DataVolumeBuilder(DataVolume())
             data_volume_builder.build(data_volume_name=DataVolumeIMage + str(index),
-                                      image_url=f"{WEB_SERVER}/rhel-guest-image-8.10-1362.x86_64.qcow2")
+                                      image_url=f"{WEB_SERVER}/{RAC_IMAGE}")
             director = TemplateDirector(template_builder=data_volume_builder)
             params = director.j2_params()
             output = generate_builder("DataVolume.j2", package_path="templates/ocp", **params)
