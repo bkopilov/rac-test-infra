@@ -80,6 +80,13 @@ EOF"
         """
 
     @classmethod
+    def disable_services(cls):
+        return """
+            sudo systemctl stop firewalld || echo done
+    EOF"
+            """
+
+    @classmethod
     def create_swap(cls):
         return """
         sudo -i bash -c "dd if=/dev/zero of=/swap.img bs=1 count=0 seek=17G"

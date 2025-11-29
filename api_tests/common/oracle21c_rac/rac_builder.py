@@ -49,11 +49,13 @@ class Builder21cRac(RacBuilder):
         directories_cmd = self.user_management.create_directories()
         enable_clock = self.user_management.set_clock_source()
         services_cmd = self.user_management.enable_services()
+        disable_firewall = self.user_management.disable_services()
         for ssh_handler in ssh_handlers:
             ssh_handler.execute(groups_cmd)
             ssh_handler.execute(ssh_keys_cmd)
             ssh_handler.execute(directories_cmd)
             ssh_handler.execute(enable_clock)
+            ssh_handler.execute(disable_firewall)
             ssh_handler.execute(services_cmd)
         time.sleep(POST_COMMAND_WAIT)
 
