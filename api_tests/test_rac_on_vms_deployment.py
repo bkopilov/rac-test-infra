@@ -38,7 +38,7 @@ APPLY_VM_TIMEOUT = 60 * 3
 # All packages and images are stored in web server
 WEB_SERVER = "http://10.9.76.8:8888"
 # OL8U10_x86_64-kvm-b258.qcow2 or rhel-guest-image-8.10-1362.x86_64.qcow2
-RAC_IMAGE = os.environ.get("RAC_IMAGE", "OL8U10_x86_64-kvm-b258.qcow2")
+RAC_IMAGE = os.environ.get("RAC_IMAGE", "rhel-guest-image-8.10-1362.x86_64.qcow2")
 DataVolumeIMage ="myimage"
 DISK_BUS_CNV = "virtio"  # support iscsi too
 RAC_DISKS = ("vdc", "vdd", "vde") if DISK_BUS_CNV == "virtio" else ("sdc", "sdd", "sde")
