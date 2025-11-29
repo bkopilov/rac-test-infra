@@ -323,6 +323,27 @@ class TestRacDeployment(BaseTest):
         assert tpm_average > hammerdb.TPM_AVERAGE, (f"TPM average should be greater than hammer DB"
                                                     f" {hammerdb.TPM_AVERAGE} but average was {tpm_average}")
 
+    def _tune_odf_performance(self):
+        command_str = (
+            "oc patch storagecluster ocs-storagecluster "
+            "-n openshift-storage "
+            "--type merge "
+            "--patch "
+            "'{"
+            '"spec": {"resources": {'
+            '"mds": {'
+            '"limits": {"cpu": "4", "memory": "8Gi"}, '
+            '"requests": {"cpu": "2", "memory": "4Gi"}'
+            '}, '
+            '"rgw": {'
+            '"limits": {"cpu": "2", "memory": "4Gi"}, '
+            '"requests": {"cpu": "1", "memory": "2Gi"}'
+            '}'
+            '}}'
+            "}'"
+        )
+        run_shell_command(cmd=command_str)
+        time.sleep(APPLY_ACTION_TIMEOUT)
 
     @pytest.mark.rac
     @pytest.mark.parametrize("masters_count", [3])
@@ -337,6 +358,7 @@ class TestRacDeployment(BaseTest):
         wait_for_cnv_status_available()
         wait_for_odf_status_ready()
         time.sleep(APPLY_ACTION_TIMEOUT)
+        self._tune_odf_performance()
         self._build_ocpv_network_policy()
         self._build_ocpv_network_attachment()
         self._build_ocpv_storage_pvc()
