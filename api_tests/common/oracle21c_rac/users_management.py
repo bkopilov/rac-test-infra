@@ -83,7 +83,6 @@ EOF"
     def disable_services(cls):
         return """
             sudo systemctl stop firewalld || echo done
-    EOF"
             """
 
     @classmethod
