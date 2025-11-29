@@ -34,7 +34,8 @@ DISK_COUNT = 2
 VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'lso', 'nmstate']
 APPLY_ACTION_TIMEOUT = 10
 APPLY_VM_TIMEOUT = 60 * 3
-
+# All packages and images are stored in web server
+WEB_SERVER = "http://10.9.76.8:8888"
 DataVolumeIMage ="myimage"
 
 class TestRacDeployment(BaseTest):
@@ -244,7 +245,8 @@ class TestRacDeployment(BaseTest):
         # create pvc from datavolume
         for index in range(2):
             data_volume_builder = DataVolumeBuilder(DataVolume())
-            data_volume_builder.build(data_volume_name=DataVolumeIMage + str(index))
+            data_volume_builder.build(data_volume_name=DataVolumeIMage + str(index),
+                                      image_url=f"{WEB_SERVER}/rhel-guest-image-8.10-1362.x86_64.qcow2")
             director = TemplateDirector(template_builder=data_volume_builder)
             params = director.j2_params()
             output = generate_builder("DataVolume.j2", package_path="templates/ocp", **params)
@@ -276,8 +278,8 @@ class TestRacDeployment(BaseTest):
 
     def _build_rac_cluster(self):
         # Created dummy web server on running hypervisr to download binaries
-        rac_builder = Builder21cRac(download_binaries=["http://10.9.76.8:8888/LINUX.X64_213000_grid_home.zip",
-                                                       "http://10.9.76.8:8888/LINUX.X64_213000_db_home.zip"])
+        rac_builder = Builder21cRac(download_binaries=[f"{WEB_SERVER}/LINUX.X64_213000_grid_home.zip",
+                                                       f"{WEB_SERVER}/LINUX.X64_213000_db_home.zip"])
         user = "cloud-user"
         private_key = "/root/.ssh/id_rsa"
         ssh_handlers = [NodeSshHandler(ipv4_address=self.RAC_DNS['node1']['ip'], username=user,
