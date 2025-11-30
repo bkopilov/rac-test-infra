@@ -173,8 +173,7 @@ class Builder21cRac(RacBuilder):
                 disk_id = ssh_handler.execute(disk_id_cmd)
                 if disk_id:
                     # for virtio returns "virtio-volume1"
-                    disk_id_remove_bus = disk_id.strip().split("-")[1]
-                    disks_asm.append(disk_id_remove_bus)
+                    disks_asm.append(disk_id.strip())
             assert len(disks_asm) == 3
             user_rules_cmd = self.asm_disks.create_udev(disks_asm[0], disks_asm[1], disks_asm[2],
                                                         name_disk_begin=self.named_disk_begin)

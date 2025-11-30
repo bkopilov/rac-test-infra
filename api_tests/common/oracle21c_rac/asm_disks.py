@@ -15,7 +15,7 @@ class AsmDisks21cRac(AsmDisks):
     def disk_id(cls, disk):
         # name by disk vda , sda without /dev
         return f"""
-        sudo find /dev/disk/by-id/ -lname *{disk} -printf "%f\n" | head -n 1
+        sudo udevadm info --query=property --name={disk} | grep "^ID_SERIAL=" | cut -d= -f2
         """
 
     @classmethod
