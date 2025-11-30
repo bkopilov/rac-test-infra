@@ -29,7 +29,7 @@ import time
 import os
 logger = logging.getLogger(__name__)
 
-params = read_tests_params("params.yaml")
+params = read_tests_params(os.getcwd() + "/params.yaml")
 CPU_CORES = params['cluster']['cpu_cores']
 RAM_MEMORY_GIB = params['cluster']['ram_memory']
 DISK_COUNT = params['cluster']['disk_count']
