@@ -20,14 +20,25 @@ class AsmDisks21cRac(AsmDisks):
 
     @classmethod
     def create_udev(cls, disk_id1, disk_id2, disk_id3, name_disk_begin):
-        return f"""
-        cat > /tmp/99-oracle-asmdevices.rules <<EOF
-KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id1}", SYMLINK+="oracleasm/asmdisk1", OWNER="oracle", GROUP="asmadmin", MODE="0660"
-KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id2}", SYMLINK+="oracleasm/asmdisk2", OWNER="oracle", GROUP="asmadmin", MODE="0660"
-KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id3}", SYMLINK+="oracleasm/asmdisk3", OWNER="oracle", GROUP="asmadmin", MODE="0660"
-EOF
-        sudo -i bash -c "cp /tmp/99-oracle-asmdevices.rules /etc/udev/rules.d/99-oracle-asmdevices.rules"
-"""
+        if name_disk_begin == "vd":
+            return f"""
+            cat > /tmp/99-oracle-asmdevices.rules <<EOF
+            KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id1}", SYMLINK+="oracleasm/asmdisk1", OWNER="oracle", GROUP="asmadmin", MODE="0660"
+            KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id2}", SYMLINK+="oracleasm/asmdisk2", OWNER="oracle", GROUP="asmadmin", MODE="0660"
+            KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id3}", SYMLINK+="oracleasm/asmdisk3", OWNER="oracle", GROUP="asmadmin", MODE="0660"
+            EOF
+            sudo -i bash -c "cp /tmp/99-oracle-asmdevices.rules /etc/udev/rules.d/99-oracle-asmdevices.rules"
+        """
+        elif name_disk_begin == "sd":
+            return f"""
+            cat > /tmp/99-oracle-asmdevices.rules <<EOF
+            KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", PROGRAM=="/usr/lib/udev/scsi_id -g -u -d /dev/\$parent", RESULT=="{disk_id1}", SYMLINK+="oracleasm/asmdisk1", OWNER="oracle", GROUP="asmadmin", MODE="0660"
+            KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", PROGRAM=="/usr/lib/udev/scsi_id -g -u -d /dev/\$parent", RESULT=="{disk_id2}", SYMLINK+="oracleasm/asmdisk2", OWNER="oracle", GROUP="asmadmin", MODE="0660"
+            KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", PROGRAM=="/usr/lib/udev/scsi_id -g -u -d /dev/\$parent", RESULT=="{disk_id3}", SYMLINK+="oracleasm/asmdisk3", OWNER="oracle", GROUP="asmadmin", MODE="0660"
+            EOF
+            sudo -i bash -c "cp /tmp/99-oracle-asmdevices.rules /etc/udev/rules.d/99-oracle-asmdevices.rules"
+        """
+        return None
 
     @classmethod
     def reload_udev_rules(cls):
