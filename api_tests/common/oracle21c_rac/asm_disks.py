@@ -27,8 +27,7 @@ class AsmDisks21cRac(AsmDisks):
             KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id2}", SYMLINK+="oracleasm/asmdisk2", OWNER="oracle", GROUP="asmadmin", MODE="0660"
             KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", ATTRS{{serial}}=="{disk_id3}", SYMLINK+="oracleasm/asmdisk3", OWNER="oracle", GROUP="asmadmin", MODE="0660"
             EOF
-            sudo -i bash -c "cp /tmp/99-oracle-asmdevices.rules /etc/udev/rules.d/99-oracle-asmdevices.rules"
-        """
+            """
         elif name_disk_begin == "sd":
             return f"""
             cat > /tmp/99-oracle-asmdevices.rules <<EOF
@@ -36,13 +35,13 @@ class AsmDisks21cRac(AsmDisks):
             KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", PROGRAM=="/usr/lib/udev/scsi_id -g -u -d /dev/\$parent", RESULT=="{disk_id2}", SYMLINK+="oracleasm/asmdisk2", OWNER="oracle", GROUP="asmadmin", MODE="0660"
             KERNEL=="{name_disk_begin}?1", SUBSYSTEM=="block", PROGRAM=="/usr/lib/udev/scsi_id -g -u -d /dev/\$parent", RESULT=="{disk_id3}", SYMLINK+="oracleasm/asmdisk3", OWNER="oracle", GROUP="asmadmin", MODE="0660"
             EOF
-            sudo -i bash -c "cp /tmp/99-oracle-asmdevices.rules /etc/udev/rules.d/99-oracle-asmdevices.rules"
-        """
+            """
         return None
 
     @classmethod
     def reload_udev_rules(cls):
         return """
+        sudo -i cp /tmp/99-oracle-asmdevices.rules /etc/udev/rules.d/99-oracle-asmdevices.rules
         sudo -i /sbin/udevadm control --reload-rules
         sudo -i /sbin/udevadm trigger --action=add
         sudo sleep 3
