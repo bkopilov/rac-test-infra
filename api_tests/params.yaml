@@ -11,5 +11,5 @@ oracle:
   # images OL8U10_x86_64-kvm-b258.qcow2 (from oracle or rhels)
   rac_image: rhel-guest-image-8.10-1362.x86_64.qcow2
   disk_bus: virtio
-  # for virtio bus disks are vdX , for scsi disks are [sdc,sdd,sde]
+  # for virtio bus disks are vdX , for scsi disks are [sdb,sdc,sdd]
   rac_disks: ["vdc", "vdd", "vde"]
