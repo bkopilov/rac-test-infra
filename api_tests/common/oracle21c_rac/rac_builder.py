@@ -30,6 +30,8 @@ class Builder21cRac(RacBuilder):
         self.binaries = download_binaries
         self.asm_disks = AsmDisks21cRac
         self.disks = disks
+        # Get prefix , sd for scsi or vd for virtio
+        self.named_disk_begin = self.disks[0][:2]
 
     def create_repo(self, ssh_handlers):
         ssl_verify_cmd = self.repo_creation.create_ssl_verify()
@@ -174,7 +176,8 @@ class Builder21cRac(RacBuilder):
                     disk_id_remove_bus = disk_id.strip().split("-")[1]
                     disks_asm.append(disk_id_remove_bus)
             assert len(disks_asm) == 3
-            user_rules_cmd = self.asm_disks.create_udev(disks_asm[0], disks_asm[1], disks_asm[2])
+            user_rules_cmd = self.asm_disks.create_udev(disks_asm[0], disks_asm[1], disks_asm[2],
+                                                        name_disk_begin=self.named_disk_begin)
             ssh_handler.execute(user_rules_cmd)
             reload_rules_cmd = self.asm_disks.reload_udev_rules()
             ssh_handler.execute(reload_rules_cmd)
