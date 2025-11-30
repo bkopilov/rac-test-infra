@@ -1,6 +1,7 @@
 cluster:
   cpu_cores: 32
-  ram_memory: 1024 * 70
+  # 1024 * 70
+  ram_memory: 71680
   disk_count: 2
   virt_bundles: ['odf', 'cnv', 'lso', 'nmstate']
 
