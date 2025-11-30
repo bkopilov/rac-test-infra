@@ -1,0 +1,14 @@
+cluster:
+  cpu_cores: 32
+  ram_memory: 1024 * 70
+  disk_count: 2
+  virt_bundles: ['odf', 'cnv', 'lso', 'nmstate']
+
+oracle:
+  # web server to download all oracle packages and images
+  web_server: http://10.9.76.8:8888
+  # images OL8U10_x86_64-kvm-b258.qcow2 (from oracle or rhels)
+  rac_image: rhel-guest-image-8.10-1362.x86_64.qcow2
+  disk_bus: virtio
+  # for virtio bus disks are vdX , for iscsi disks are [sdc,sdd,sde]
+  rac_disks: ["vdc", "vdd", "vde"]

@@ -19,7 +19,7 @@ from api_tests.common.commands.shell_commands import run_shell_command
 from api_tests.common.commands.node_commands import NodeSshHandler
 from api_tests.common.oracle21c_rac.rac_builder import Builder21cRac, RacDirector
 from api_tests.common.hammer_db.hammer_builder import Hammer5Builder
-from api_tests.common.utils import generate_mac
+from api_tests.common.utils import generate_mac, read_tests_params
 from netaddr import IPNetwork
 
 import copy
@@ -29,19 +29,20 @@ import time
 import os
 logger = logging.getLogger(__name__)
 
-CPU_CORES = 32
-RAM_MEMORY_GIB = 1024 * 70
-DISK_COUNT = 2
-VIRTUALIZATION_BUNDLE = ['odf', 'cnv', 'lso', 'nmstate']
+params = read_tests_params("params.yaml")
+CPU_CORES = params['cluster']['cpu_cores']
+RAM_MEMORY_GIB = params['cluster']['ram_memory']
+DISK_COUNT = params['cluster']['disk_count']
+VIRTUALIZATION_BUNDLE = params['cluster']['virt_bundles']
 APPLY_ACTION_TIMEOUT = 10
 APPLY_VM_TIMEOUT = 60 * 3
 # All packages and images are stored in web server
-WEB_SERVER = "http://10.9.76.8:8888"
-# OL8U10_x86_64-kvm-b258.qcow2 or rhel-guest-image-8.10-1362.x86_64.qcow2
-RAC_IMAGE = os.environ.get("RAC_IMAGE", "rhel-guest-image-8.10-1362.x86_64.qcow2")
+WEB_SERVER = params['oracle']['web_server']
+RAC_IMAGE = params['oracle']['rac_image']
+DISK_BUS_CNV = params['oracle']['disk_bus']
+RAC_DISKS = params['oracle']['rac_disks']
+
 DataVolumeIMage ="myimage"
-DISK_BUS_CNV = "virtio"  # support iscsi too
-RAC_DISKS = ("vdc", "vdd", "vde") if DISK_BUS_CNV == "virtio" else ("sdc", "sdd", "sde")
 
 class TestRacDeployment(BaseTest):
     """Test RAC oracle on OCPv with 2 vms conntected to shared backend.

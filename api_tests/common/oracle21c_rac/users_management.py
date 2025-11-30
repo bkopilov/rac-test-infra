@@ -31,6 +31,7 @@ class UsersManagement21cRac(UsersManagement):
     def allow_ssh_password(cls):
         return """
         sudo bash -c "sed -i -e 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config"
+        sudo systemctl reload sshd
         """
 
     @classmethod
