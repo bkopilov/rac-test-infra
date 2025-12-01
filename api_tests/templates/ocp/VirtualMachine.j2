@@ -79,7 +79,7 @@ spec:
               model: virtio
               name: {{interface_name3}}
           rng: {}
-        {% if threadio_enabled %}
+        {% if enabled_thread_io %}
         ioThreads:
           supplementalPoolThreadCount: {{ thread_count }}
         ioThreadsPolicy: supplementalPool

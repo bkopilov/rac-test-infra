@@ -277,6 +277,7 @@ class TestRacDeployment(BaseTest):
                                      mac_address1=self.RAC_NETWORKS[0]['macs'][index],
                                      mac_address2=self.RAC_NETWORKS[1]['macs'][index],
                                      mac_address3=self.RAC_NETWORKS[2]['macs'][index])
+
             vm_builder.build_thread_io(enabled_thread_io=ENABLED_THREAD_IO,
                                        thread_count=THREAD_COUNT)
             director = TemplateDirector(template_builder=vm_builder)
