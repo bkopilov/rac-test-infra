@@ -261,6 +261,7 @@ class TestRacDeployment(BaseTest):
 
     def _build_ocpv_vms(self):
         """Create 2 VMs inside OCP with 3 nics for rac accessible from hypervisor"""
+        global params
         for index in range(2):
             vm_builder = VirtualMachineBuilder(VirtualMachine())
             vm_builder.build_storage(node_name="oralab" + str(index + 1), ssh_key_name="ssh-key",
@@ -276,6 +277,8 @@ class TestRacDeployment(BaseTest):
                                      mac_address1=self.RAC_NETWORKS[0]['macs'][index],
                                      mac_address2=self.RAC_NETWORKS[1]['macs'][index],
                                      mac_address3=self.RAC_NETWORKS[2]['macs'][index])
+            vm_builder.build_thread_io(enabled_thread_io=params['oracle']['enabled_thread_io'],
+                                       thread_count=params['oracle']['thread_count'])
             director = TemplateDirector(template_builder=vm_builder)
             params = director.j2_params()
             output = generate_builder("VirtualMachine.j2", package_path="templates/ocp", **params)

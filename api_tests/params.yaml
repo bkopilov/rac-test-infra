@@ -11,6 +11,9 @@ oracle:
   # images OL8U10_x86_64-kvm-b258.qcow2 (from oracle or rhels)
   rac_image: rhel-guest-image-8.10-1362.x86_64.qcow2
   disk_bus: virtio
+  # thread io supported on ocp 4.19 and virtio bus
+  enabled_thread_io: False
+  thread_count: 2
   # virtio bus rac_disks are ["vdc","vdd","vde"]
   # scsi bus rac_disks are ["sdb","sdc","sdd"]
   rac_disks: ["vdc", "vdd", "vde"]

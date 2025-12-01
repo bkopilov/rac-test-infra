@@ -41,5 +41,9 @@ class VirtualMachineBuilder(TemplateBuilder):
         self.template.mac_address2 = mac_address2
         self.template.mac_address3 = mac_address3
 
+    def build_thread_io(self, enabled_thread_io, thread_count):
+        self.template.enabled_thread_io = enabled_thread_io
+        self.template.thread_count = thread_count
+
 
 

@@ -79,9 +79,11 @@ spec:
               model: virtio
               name: {{interface_name3}}
           rng: {}
+        {% if threadio_enabled %}
         ioThreads:
-          supplementalPoolThreadCount: 4
+          supplementalPoolThreadCount: {{ thread_count }}
         ioThreadsPolicy: supplementalPool
+        {% endif %}
         machine:
           type: pc-q35-rhel9.4.0
         memory:
