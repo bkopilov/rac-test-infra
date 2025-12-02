@@ -332,35 +332,33 @@ class TestRacDeployment(BaseTest):
 
     @staticmethod
     def _tune_odf_performance():
-        osd = """
-        {
+        osd = """{
           "spec": {
             "resources": {
               "osd": {
                 "limits": {"cpu": "8", "memory": "16Gi"},
                 "requests": {"cpu": "4", "memory": "12Gi"}
-              }
-            }
+                  }
+                }
           }
-        }
-        """
+        }"""
 
-        mon = """
-        {
+        mon = """{
           "spec": {
             "resources": {
-              "mon": {
-                "limits": {"cpu": "2", "memory": "6Gi"},
-                "requests": {"cpu": "1", "memory": "4Gi"}
-              }
+               "mon": {
+                  "limits": {"cpu": "2", "memory": "6Gi"},
+                  "requests": {"cpu": "1", "memory": "4Gi"}
+                  }
+               }
             }
-          }
-        }
-        """
-        run_shell_command(cmd=osd)
-        time.sleep(APPLY_ACTION_TIMEOUT)
-        run_shell_command(cmd=mon)
-        time.sleep(APPLY_ACTION_TIMEOUT)
+        }"""
+        for patch in [mon, osd]:
+            base_command = \
+                f"""oc patch storagecluster ocs-storagecluster -n openshift-storage --type merge -p '{patch}'"""
+            run_shell_command(cmd=base_command)
+            time.sleep(APPLY_ACTION_TIMEOUT)
+
 
     @pytest.mark.rac
     @pytest.mark.parametrize("masters_count", [3])
