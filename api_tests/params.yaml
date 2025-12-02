@@ -10,7 +10,7 @@ oracle:
   web_server: http://10.9.76.8:8888
   # images OL8U10_x86_64-kvm-b258.qcow2 (from oracle or rhels)
   rac_image: rhel-guest-image-8.10-1362.x86_64.qcow2
-  storage_class_name: ocs-storagecluster-ceph-rbd-virtualization-thick
+  storage_class_name: ocs-storagecluster-ceph-rbd-virtualization
   disk_bus: virtio
   # thread io supported on ocp 4.19 and virtio bus
   enabled_thread_io: False
