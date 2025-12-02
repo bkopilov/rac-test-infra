@@ -330,42 +330,27 @@ class TestRacDeployment(BaseTest):
         assert tpm_average > hammerdb.TPM_AVERAGE, (f"TPM average should be greater than hammer DB"
                                                     f" {hammerdb.TPM_AVERAGE} but average was {tpm_average}")
 
-    def _tune_odf_performance(self):
-        command_delete = "oc delete sc/ocs-storagecluster-ceph-rbd-virtualization"
-        run_shell_command(cmd=command_delete)
-        time.sleep(APPLY_ACTION_TIMEOUT)
-        create_storage_class_thick ="""cat << EOF | oc apply -f -
-        allowVolumeExpansion: true
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  annotations:
-    description: Provides RWO and RWX Block volumes suitable for Virtual Machine disks
-    reclaimspace.csiaddons.openshift.io/schedule: '@weekly'
-  labels:
-    ramendr.openshift.io/storageid: e8f298bb0f907e7c851c56a99bc18391
-  name: ocs-storagecluster-ceph-rbd-virtualization-thick
-parameters:
-  clusterID: openshift-storage
-  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
-  csi.storage.k8s.io/controller-expand-secret-namespace: openshift-storage
-  csi.storage.k8s.io/fstype: ext4
-  thickProvision: "true"
-  csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
-  csi.storage.k8s.io/node-stage-secret-namespace: openshift-storage
-  csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
-  csi.storage.k8s.io/provisioner-secret-namespace: openshift-storage
-  imageFeatures: layering,deep-flatten,exclusive-lock,object-map,fast-diff
-  imageFormat: "2"
-  mapOptions: krbd:rxbounce
-  mounter: rbd
-  pool: ocs-storagecluster-cephblockpool
-provisioner: openshift-storage.rbd.csi.ceph.com
-reclaimPolicy: Delete
-volumeBindingMode: Immediate
-EOF
-"""
-        run_shell_command(cmd=create_storage_class_thick)
+    @staticmethod
+    def _tune_odf_performance():
+        command_str = (
+            "oc patch storagecluster ocs-storagecluster "
+            "-n openshift-storage "
+            "--type merge "
+            "--patch "
+            "'{"
+            '"spec": {"resources": {'
+            '"mds": {'
+            '"limits": {"cpu": "4", "memory": "8Gi"}, '
+            '"requests": {"cpu": "2", "memory": "4Gi"}'
+            '}, '
+            '"rgw": {'
+            '"limits": {"cpu": "2", "memory": "4Gi"}, '
+            '"requests": {"cpu": "1", "memory": "2Gi"}'
+            '}'
+            '}}'
+            "}'"
+        )
+        run_shell_command(cmd=command_str)
         time.sleep(APPLY_ACTION_TIMEOUT)
 
     @pytest.mark.rac
