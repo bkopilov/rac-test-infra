@@ -332,25 +332,34 @@ class TestRacDeployment(BaseTest):
 
     @staticmethod
     def _tune_odf_performance():
-        command_str = (
-            "oc patch storagecluster ocs-storagecluster "
-            "-n openshift-storage "
-            "--type merge "
-            "--patch "
-            "'{"
-            '"spec": {"resources": {'
-            '"mds": {'
-            '"limits": {"cpu": "4", "memory": "8Gi"}, '
-            '"requests": {"cpu": "2", "memory": "4Gi"}'
-            '}, '
-            '"rgw": {'
-            '"limits": {"cpu": "2", "memory": "4Gi"}, '
-            '"requests": {"cpu": "1", "memory": "2Gi"}'
-            '}'
-            '}}'
-            "}'"
-        )
-        run_shell_command(cmd=command_str)
+        osd = """
+        {
+          "spec": {
+            "resources": {
+              "osd": {
+                "limits": {"cpu": "8", "memory": "16Gi"},
+                "requests": {"cpu": "4", "memory": "12Gi"}
+              }
+            }
+          }
+        }
+        """
+
+        mon = """
+        {
+          "spec": {
+            "resources": {
+              "mon": {
+                "limits": {"cpu": "2", "memory": "6Gi"},
+                "requests": {"cpu": "1", "memory": "4Gi"}
+              }
+            }
+          }
+        }
+        """
+        run_shell_command(cmd=osd)
+        time.sleep(APPLY_ACTION_TIMEOUT)
+        run_shell_command(cmd=mon)
         time.sleep(APPLY_ACTION_TIMEOUT)
 
     @pytest.mark.rac
