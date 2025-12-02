@@ -43,6 +43,7 @@ DISK_BUS_CNV = params['oracle']['disk_bus']
 RAC_DISKS = params['oracle']['rac_disks']
 ENABLED_THREAD_IO = params['oracle']['enabled_thread_io']
 THREAD_COUNT = params['oracle']['thread_count']
+STORAGE_CLASS_NAME = params['oracle']['storage_class_name']
 DataVolumeIMage ="myimage"
 
 class TestRacDeployment(BaseTest):
@@ -240,7 +241,7 @@ class TestRacDeployment(BaseTest):
         for index in range(1, 4):
             pvc_builder = PersistentVolumeClaimBuilder(PersistentVolumeClaim())
             pvc_builder.build(pvc_name="volume" + str(index), pvc_access_permissions="ReadWriteMany",
-                              pvc_size="20Gi", pvc_storage_class="ocs-storagecluster-ceph-rbd-virtualization",
+                              pvc_size="20Gi", pvc_storage_class=STORAGE_CLASS_NAME,
                               pvc_mode="Block")
             director = TemplateDirector(template_builder=pvc_builder)
             params = director.j2_params()
@@ -253,7 +254,8 @@ class TestRacDeployment(BaseTest):
         for index in range(2):
             data_volume_builder = DataVolumeBuilder(DataVolume())
             data_volume_builder.build(data_volume_name=DataVolumeIMage + str(index),
-                                      image_url=f"{WEB_SERVER}/{RAC_IMAGE}")
+                                      image_url=f"{WEB_SERVER}/{RAC_IMAGE}",
+                                      storage_class=STORAGE_CLASS_NAME)
             director = TemplateDirector(template_builder=data_volume_builder)
             params = director.j2_params()
             output = generate_builder("DataVolume.j2", package_path="templates/ocp", **params)
